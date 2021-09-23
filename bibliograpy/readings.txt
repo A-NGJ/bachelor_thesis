@@ -1,3 +1,24 @@
 http://yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf
 http://jmlr.org/proceedings/papers/v15/glorot11a/glorot11a.pdf - activation function
 https://stats.stackexchange.com/questions/154879/a-list-of-cost-functions-used-in-neural-networks-alongside-applications
+http://neuralnetworksanddeeplearning.com/chap1.html
+https://iamtrask.github.io/2015/07/27/python-network-part2/ - application gradient descent
+http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf
+https://arxiv.org/pdf/1609.04112.pdf
+https://arxiv.org/pdf/1502.01852.pdf
+https://www.ais.uni-bonn.de/papers/icann2010_maxpool.pdf
+https://adeshpande3.github.io/The-9-Deep-Learning-Papers-You-Need-To-Know-About.html
+http://cs.nju.edu.cn/wujx/paper/CNN.pdf
+https://rdipietro.github.io/friendly-intro-to-cross-entropy-loss/
+http://peterroelants.github.io/posts/neural_network_implementation_intermezzo02/
+https://arstechnica.com/the-multiverse/2016/06/an-ai-wrote-this-movie-and-its-strangely-moving/
+http://people.idsia.ch/~juergen/SeppHochreiter1991ThesisAdvisorSchmidhuber.pdf - RNN
+https://www.researchgate.net/publication/5583935_Learning_long-term_dependencies_with_gradient_descent_is_difficult
+http://www.jmlr.org/proceedings/papers/v28/pascanu13.pdf
+http://colah.github.io/posts/2015-08-Understanding-LSTMs/
+https://medium.com/@shiyan/Understanding-lstm-and-its-diagrams-37e2f46f1714
+http://karpathy.github.io/2015/05/21/rnn-effectivness/
+https://arxiv.org/pdf/1506.02078.pdf
+https://arxiv.org/pdf/1503.04069.pdf
+https://arxiv.org/pdf/1312.5753.pdf
+http://sci2s.ugr.es/keel/pdf/algorithm/articulo/1990-Kohonen-PIEEE.pdf
