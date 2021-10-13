@@ -1,1 +1,5 @@
 https://arxiv.org/pdf/1802.09477.pdf
+https://www.cs.vu.nl/~annette/SIKS2009/material/SIKS-RLIntro.pdf
+https://link.springer.com/article/10.1007/BF00115009
+https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-0-q-learning-with-tables-and-neural-networks-d195264329d0
+https://arxiv.org/pdf/1511.05952.pdf
