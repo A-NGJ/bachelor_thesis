@@ -22,3 +22,4 @@ https://arxiv.org/pdf/1506.02078.pdf
 https://arxiv.org/pdf/1503.04069.pdf
 https://arxiv.org/pdf/1312.5753.pdf
 http://sci2s.ugr.es/keel/pdf/algorithm/articulo/1990-Kohonen-PIEEE.pdf
+http://www.ai-junkie.com/ann/som/som1.html
