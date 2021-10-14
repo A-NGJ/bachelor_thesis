@@ -3,7 +3,7 @@ http://jmlr.org/proceedings/papers/v15/glorot11a/glorot11a.pdf - activation func
 https://stats.stackexchange.com/questions/154879/a-list-of-cost-functions-used-in-neural-networks-alongside-applications
 http://neuralnetworksanddeeplearning.com/chap1.html
 https://iamtrask.github.io/2015/07/27/python-network-part2/ - application gradient descent
- http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf
+http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf
 https://arxiv.org/pdf/1609.04112.pdf
 https://arxiv.org/pdf/1502.01852.pdf
 https://www.ais.uni-bonn.de/papers/icann2010_maxpool.pdf
