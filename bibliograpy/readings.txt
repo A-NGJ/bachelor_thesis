@@ -26,3 +26,4 @@ https://arxiv.org/pdf/1802.09477.pdf
 https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-0-q-learning-with-tables-and-neural-networks-d195264329d0
 https://web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf
 https://www.cs.uml.edu/ecg/uploads/AIfall14/MDPApplications3.pdf
+http://www.ai-junkie.com/ann/som/som1.html
