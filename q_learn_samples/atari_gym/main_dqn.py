@@ -1,21 +1,22 @@
+import argparse
 import numpy as np
 from dqn_agent import DQNAgent
+from ddqn_agent import DDQNAgent
 from util import (
     make_env,
     plot_learning_curve
 )
 
-
-if __name__=='__main__':
+def main(agent_class, algo):
     env = make_env('PongNoFrameskip-v4')
     best_score = -np.inf
     load_checkpoint = False
     n_games = 500
-    agent = DQNAgent(gamma=0.99, epsilon=1.0, lr=1e-4,
+    agent = agent_class(gamma=0.99, epsilon=1.0, lr=1e-4,
                      input_dims=(env.observation_space.shape),
                      n_actions=env.action_space.n, mem_size=50000, eps_min=0.1,
                      batch_size=32, replace=1000, eps_dec=1e-5,
-                     chkpt_dir='models/', algo='DQNAgent',
+                     chkpt_dir='models/', algo=algo,
                      env_name='PongNoFrameskip-v4')
 
     if load_checkpoint:
@@ -61,3 +62,17 @@ if __name__=='__main__':
         eps_history.append(agent.epsilon)
 
     plot_learning_curve(steps_array, scores, eps_history, figure_file)
+
+
+if __name__=='__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('algorithm', choices=['dqn', 'ddqn'], type=str)
+    args = parser.parse_args()
+    if args.algorithm == 'dqn':
+        algo = 'DQNAgent'
+        agent_class = DQNAgent
+    elif args.algorithm == 'ddqn':
+        algo = 'DDQNAgent'
+        agent_class = DDQNAgent
+
+    main(agent_class, algo)
