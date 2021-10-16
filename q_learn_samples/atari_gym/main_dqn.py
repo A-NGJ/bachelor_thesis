@@ -30,6 +30,11 @@ def main(agent_class, network_class, algo, args):
     if load_checkpoint:
         agent.load_models()
 
+    # saving to video
+    # env = wrappers.Monitor(env, 'tmp/video',
+    #                        video_callable=lambda episode_id: True,
+    #                        force=True) <- overriding previous episode
+
     fname = f'{agent.algo}_{agent.env_name}_lr{agent.lr}__{n_games}games'
     figure_file = f'plots/{fname}.png'
 
