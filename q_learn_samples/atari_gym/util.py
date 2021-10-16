@@ -1,4 +1,5 @@
 import collections
+import os
 
 import cv2
 import gym
@@ -28,6 +29,9 @@ def plot_learning_curve(x, scores, epsilons, filename):
     ax2.yaxis.set_label_position('right')
     ax2.tick_params(axis='y', colors='C1')
 
+    dirname = os.path.dirname(filename)
+    if not os.path.exists(dirname):
+        os.mkdir(dirname)
     plt.savefig(filename)
 
 

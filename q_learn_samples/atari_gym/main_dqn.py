@@ -1,23 +1,31 @@
 import argparse
 import numpy as np
-from dqn_agent import DQNAgent
-from ddqn_agent import DDQNAgent
+from agents.dqn_agent import DQNAgent
+from agents.ddqn_agent import DDQNAgent
+from agents.dueling_dqn_agent import (
+    DuelingDDQNAgent,
+    DuelingDQNAgent
+)
+from deep_q_network import (
+    DeepQNetwork,
+    DuelingDeepQNetwork
+)
 from util import (
     make_env,
     plot_learning_curve
 )
 
-def main(agent_class, algo):
+def main(agent_class, network_class, algo, args):
     env = make_env('PongNoFrameskip-v4')
     best_score = -np.inf
-    load_checkpoint = False
-    n_games = 500
-    agent = agent_class(gamma=0.99, epsilon=1.0, lr=1e-4,
-                     input_dims=(env.observation_space.shape),
-                     n_actions=env.action_space.n, mem_size=50000, eps_min=0.1,
-                     batch_size=32, replace=1000, eps_dec=1e-5,
-                     chkpt_dir='models/', algo=algo,
-                     env_name='PongNoFrameskip-v4')
+    load_checkpoint = True
+    n_games = 10
+    agent = agent_class(network=network_class, gamma=0.99, epsilon=0.0, lr=1e-4,
+                        input_dims=(env.observation_space.shape),
+                        n_actions=env.action_space.n, mem_size=40000, eps_min=0.0,
+                        batch_size=32, replace=1000, eps_dec=1e-5,
+                        chkpt_dir='models/', algo=algo,
+                        env_name='PongNoFrameskip-v4')
 
     if load_checkpoint:
         agent.load_models()
@@ -38,6 +46,8 @@ def main(agent_class, algo):
             observation_, reward, done, info = env.step(action)
             score += reward
 
+            if args.render:
+                env.render()
             if not load_checkpoint:
                 agent.store_transition(observation, action, reward,
                                        observation_, int(done))
@@ -66,13 +76,28 @@ def main(agent_class, algo):
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('algorithm', choices=['dqn', 'ddqn'], type=str)
+    parser.add_argument('-a', '--algorithm', choices=['dueling-ddqn', 'dueling-dqn', 'dqn', 'ddqn'], type=str)
+    parser.add_argument('-r', '--render', action='store_true')
     args = parser.parse_args()
     if args.algorithm == 'dqn':
         algo = 'DQNAgent'
         agent_class = DQNAgent
+        network_class = DeepQNetwork
     elif args.algorithm == 'ddqn':
         algo = 'DDQNAgent'
         agent_class = DDQNAgent
+        network_class = DeepQNetwork
+    elif args.algorithm == 'dueling-dqn':
+        algo = 'DuelingDQNAgent'
+        agent_class = DuelingDQNAgent
+        network_class = DuelingDeepQNetwork
+    elif args.algorithm == 'dueling-ddqn':
+        algo = 'DuelingDDQNAgent'
+        agent_class = DuelingDDQNAgent
+        network_class = DuelingDeepQNetwork
 
-    main(agent_class, algo)
+    # for multiple gpus
+    # os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
+    # os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+
+    main(agent_class, network_class, algo, args)
