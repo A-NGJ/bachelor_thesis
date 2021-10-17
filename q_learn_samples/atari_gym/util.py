@@ -116,7 +116,7 @@ class StackFrames(gym.ObservationWrapper):
 
     def observation(self, obs):
         self.stack.append(obs)
-        
+
         return np.array(self.stack).reshape(self.observation_space.low.shape)
         
 

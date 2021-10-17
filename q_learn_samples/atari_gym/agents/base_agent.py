@@ -26,14 +26,14 @@ class BaseAgent():
         self.memory = ReplayBuffer(mem_size, input_dims, n_actions)
 
         self.q_eval = network(self.lr, self.n_actions,
-                                   input_dims=self.input_dims,
-                                   name=f'{self.env_name}_{self.algo}_q_eval',
-                                   chkpt_dir=self.chkpt_dir)
+                              input_dims=self.input_dims,
+                              name=f'{self.env_name}_{self.algo}_q_eval',
+                              chkpt_dir=self.chkpt_dir)
 
         self.q_next = network(self.lr, self.n_actions,
-                            input_dims=self.input_dims,
-                            name=f'{self.env_name}_{self.algo}_q_next',
-                            chkpt_dir=self.chkpt_dir)
+                              input_dims=self.input_dims,
+                              name=f'{self.env_name}_{self.algo}_q_next',
+                              chkpt_dir=self.chkpt_dir)
 
     def choose_action(self, observation):
         if np.random.random() > self.epsilon:

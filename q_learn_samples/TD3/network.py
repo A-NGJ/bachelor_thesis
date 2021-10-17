@@ -1,21 +1,38 @@
-import numpy as np
+from abc import ABC
+import os
+
 import torch as T
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
-import torch.optim as optim
+from torch import optim
 
 
-class ActorNetwork(nn.Module):
-    def __init__(self, state_shape, action_shape, max_action):
+class BaseNetwork(nn.Module, ABC):
+    def __init__(self, chckpt_dir='models/'):
         super().__init__()
+        self.chckpt_dir = chckpt_dir
+        self.checkpoint_file = os.path.join(self.chckpt_dir, f'{self.__name__}.pth')
+
+        self.optimizer = optim.Adam(self.parameters())
+
+    def save_checkpoint(self):
+        if not os.path.exists(self.chckpt_dir):
+            os.mkdir(self.chckpt_dir)
+        T.save(self.state_dict(), self.checkpoint_file)
+
+    def load_checkpoint(self):
+        self.load_state_dict(T.load(self.checkpoint_file))
+
+
+class ActorNetwork(BaseNetwork):
+    def __init__(self, state_shape, action_shape, max_action, chckpt_dir='models/'):
+        super().__init__(chckpt_dir)
 
         self.fc1 = nn.Linear(state_shape, 400)
         self.fc2 = nn.Linear(400, 300)
         self.fc3 = nn.Linear(300, action_shape)
 
         self.max_action = max_action
-
-        self.optimizer = optim.Adam(self.parameters())
 
     def forward(self, state):
         state = F.relu(self.fc1(state))
@@ -25,10 +42,10 @@ class ActorNetwork(nn.Module):
         return actions
 
 
-class CriticNetwork(nn.Module):
-    def __init__(self, state_shape, action_shape):
-        super().__init__()
-    
+class CriticNetwork(BaseNetwork):
+    def __init__(self, state_shape, action_shape, chckpt_dir='models/'):
+        super().__init__(chckpt_dir)
+
         # Defining the first Critic NN
         self.fc11 = nn.Linear(state_shape + action_shape, 400)
         self.fc12 = nn.Linear(400, 300)
@@ -37,8 +54,6 @@ class CriticNetwork(nn.Module):
         self.fc21 = nn.Linear(state_shape + action_shape, 400)
         self.fc22 = nn.Linear(400, 300)
         self.fc23 = nn.Linear(300, 1)
-
-        self.optimizer = optim.Adam(self.parameters())
 
     def _iter_q(self, n):
         for i in range(1, 4):
