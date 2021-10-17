@@ -15,6 +15,8 @@ class ActorNetwork(nn.Module):
 
         self.max_action = max_action
 
+        self.optimizer = optim.Adam(self.parameters())
+
     def forward(self, state):
         state = F.relu(self.fc1(state))
         state = F.relu(self.fc2(state))
@@ -35,6 +37,8 @@ class CriticNetwork(nn.Module):
         self.fc21 = nn.Linear(state_shape + action_shape, 400)
         self.fc22 = nn.Linear(400, 300)
         self.fc23 = nn.Linear(300, 1)
+
+        self.optimizer = optim.Adam(self.parameters())
 
     def _iter_q(self, n):
         for i in range(1, 4):
