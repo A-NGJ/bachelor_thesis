@@ -45,7 +45,7 @@ def main(agent_class, network_class, algo, args):
         done = False
         score = 0
         observation = env.reset()
-        
+
         while not done:
             action = agent.choose_action(observation)
             observation_, reward, done, info = env.step(action)

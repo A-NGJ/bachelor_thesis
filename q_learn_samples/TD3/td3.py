@@ -11,17 +11,19 @@ import util
 
 
 class TD3:
-    def __init__(self, state_shape, action_shape, max_action):
+    def __init__(self, state_shape, action_shape, max_action, name='', chckpt_dir='models/'):
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
 
-        self.actor = ActorNetwork(state_shape, action_shape,
-                                  max_action).to(self.device)
-        self.actor_target = ActorNetwork(state_shape, action_shape,
-                                         max_action).to(self.device)
+        self.actor = ActorNetwork(state_shape[0], action_shape[0],
+                                  max_action, name, chckpt_dir).to(self.device)
+        self.actor_target = ActorNetwork(state_shape[0], action_shape[0],
+                                         max_action, name, chckpt_dir).to(self.device)
         self.actor_target.load_state_dict(self.actor.state_dict())
 
-        self.critic = CriticNetwork(state_shape, action_shape).to(self.device)
-        self.critic_target = CriticNetwork(state_shape, action_shape).to(self.device)
+        self.critic = CriticNetwork(state_shape[0], action_shape[0],
+                                    name, chckpt_dir).to(self.device)
+        self.critic_target = CriticNetwork(state_shape[0], action_shape[0],
+                                           name, chckpt_dir).to(self.device)
         self.critic_target.load_state_dict(self.critic.state_dict())
 
         self.max_action = max_action
@@ -29,13 +31,12 @@ class TD3:
         self.loss = nn.MSELoss()
 
     def select_action(self, state):
-        state = T.Tensor(state.reshape(1, -1)).to(self.device)
-        action = self.actor.forward(state).cpu()
-        return action.data.numpy().flatten()
+        state = T.FloatTensor(state.reshape(1, -1)).to(self.device)
+        return self.actor.forward(state).cpu().data.numpy().flatten()
 
     def train(self, iterations, batch_size=100,
               discount=0.99, tau=5e-3, policy_noise=0.2, noise_clip=0.5,
-              policy_freq=2):
+              policy_freq=2, **kwargs):
         for i in range(iterations):
             # Step4: We sample a batch of transitions (s, a, r, s') from the mem
             states, actions, rewards, states_, dones = \
@@ -62,7 +63,7 @@ class TD3:
             # Step10
             q1, q2 = self.critic.forward(state, action)
             # Step11
-            critic_loss = (self.loss(q1, target_q) + self.loss(q2, target_q)).to(self.device)
+            critic_loss = self.loss(q1, target_q) + self.loss(q2, target_q)
             # Step12
             self.critic.optimizer.zero_grad()
             critic_loss.backward()
@@ -73,10 +74,15 @@ class TD3:
                 self.actor.optimizer.zero_grad()
                 actor_loss.backward()
                 self.actor.optimizer.step()
-                #step 14
-                util.polyak_avg(self.actor.parameters(), self.actor_target.parameters(), tau)
-                #step 15
-                util.polyak_avg(self.critic.parameters(), self.critic_target.parameters(), tau)
+                # #step 14
+                # util.polyak_avg(self.actor.parameters(), self.actor_target.parameters(), tau)
+                # #step 15
+                # util.polyak_avg(self.critic.parameters(), self.critic_target.parameters(), tau)# S
+                for param, target_param in zip(self.actor.parameters(), self.actor_target.parameters()):
+                    target_param.data.copy_(tau * param.data + (1 - tau) * target_param.data)
+                
+                for param, target_param in zip(self.critic.parameters(), self.critic_target.parameters()):
+                    target_param.data.copy_(tau * param.data + (1 - tau) * target_param.data)
 
     def save_models(self):
         self.actor.save_checkpoint()

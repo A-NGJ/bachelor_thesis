@@ -6,14 +6,12 @@ from torch import nn
 import torch.nn.functional as F
 from torch import optim
 
-
 class BaseNetwork(nn.Module, ABC):
-    def __init__(self, chckpt_dir='models/'):
+    def __init__(self, name='', chckpt_dir='models/'):
         super().__init__()
         self.chckpt_dir = chckpt_dir
-        self.checkpoint_file = os.path.join(self.chckpt_dir, f'{self.__name__}.pth')
-
-        self.optimizer = optim.Adam(self.parameters())
+        self.name = f'{name}_{self.__name__}.pth'
+        self.checkpoint_file = os.path.join(self.chckpt_dir, self.name)
 
     def save_checkpoint(self):
         if not os.path.exists(self.chckpt_dir):
@@ -25,12 +23,16 @@ class BaseNetwork(nn.Module, ABC):
 
 
 class ActorNetwork(BaseNetwork):
-    def __init__(self, state_shape, action_shape, max_action, chckpt_dir='models/'):
-        super().__init__(chckpt_dir)
+    __name__ = 'ActorNetwork'
+
+    def __init__(self, state_shape, action_shape, max_action, name='', chckpt_dir='models/'):
+        super().__init__(name, chckpt_dir)
 
         self.fc1 = nn.Linear(state_shape, 400)
         self.fc2 = nn.Linear(400, 300)
         self.fc3 = nn.Linear(300, action_shape)
+
+        self.optimizer = optim.Adam(self.parameters())
 
         self.max_action = max_action
 
@@ -43,8 +45,10 @@ class ActorNetwork(BaseNetwork):
 
 
 class CriticNetwork(BaseNetwork):
-    def __init__(self, state_shape, action_shape, chckpt_dir='models/'):
-        super().__init__(chckpt_dir)
+    __name__ = 'CriticNetwork'
+
+    def __init__(self, state_shape, action_shape, name='', chckpt_dir='models/'):
+        super().__init__(name, chckpt_dir)
 
         # Defining the first Critic NN
         self.fc11 = nn.Linear(state_shape + action_shape, 400)
@@ -54,6 +58,8 @@ class CriticNetwork(BaseNetwork):
         self.fc21 = nn.Linear(state_shape + action_shape, 400)
         self.fc22 = nn.Linear(400, 300)
         self.fc23 = nn.Linear(300, 1)
+
+        self.optimizer = optim.Adam(self.parameters())
 
     def _iter_q(self, n):
         for i in range(1, 4):
