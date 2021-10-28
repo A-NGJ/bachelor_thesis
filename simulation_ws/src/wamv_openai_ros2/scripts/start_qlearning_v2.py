@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-
-import gym
-import numpy
+import os
 import time
+
+import cv2
+import numpy as np
+
 import qlearn
 from gym import wrappers
 import rospy
@@ -12,7 +14,7 @@ from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
 
 if __name__ == '__main__':
 
-    rospy.init_node('wamv_nav_twosets_buoys_qlearn', anonymous=True, log_level=rospy.DEBUG)
+    rospy.init_node('wamv_nav_qlearn', anonymous=True, log_level=rospy.DEBUG)
 
     # Init OpenAI_ROS ENV
     task_and_robot_environment_name = rospy.get_param(
@@ -30,7 +32,7 @@ if __name__ == '__main__':
     env = wrappers.Monitor(env, outdir, force=True)
     rospy.loginfo("Monitor Wrapper started")
 
-    last_time_steps = numpy.ndarray(0)
+    last_time_steps = np.ndarray(0)
 
     # Loads parameters from the ROS param server
     # Parameters are stored in a yaml file inside the config directory
@@ -73,8 +75,21 @@ if __name__ == '__main__':
             rospy.logwarn("Next action is:%d", action)
             # Execute the action in the environment and get feedback
             observation, reward, done, info = env.step(action)
+            image_r = observation[-3]
+            image_l = observation[-2]
+            image_m = observation[-1]
+            img_dir = rospy.get_param('/results/image_path')
+            image_r = cv2.cvtColor(image_r, cv2.COLOR_BGR2RGB)
+            image_l = cv2.cvtColor(image_l, cv2.COLOR_BGR2RGB)
+            image_m = cv2.cvtColor(image_m, cv2.COLOR_BGR2RGB)
+            cv2.imwrite(os.path.join(img_dir, f'image_r_{i}.jpg'), image_r)
+            cv2.imwrite(os.path.join(img_dir, f'image_l_{i}.jpg'), image_l)
+            cv2.imwrite(os.path.join(img_dir, f'image_m_{i}.jpg'), image_m)
+            image_r = np.array(image_r)
+            image_l = np.array(image_l)
+            image_m = np.array(image_m)
+            rospy.logdebug(f'!!! Image shape" {image_r.shape} !!!')
 
-            rospy.logwarn(str(observation) + " " + str(reward))
             cumulated_reward += reward
             if highest_reward < cumulated_reward:
                 highest_reward = cumulated_reward
@@ -94,7 +109,7 @@ if __name__ == '__main__':
                 state = nextState
             else:
                 rospy.logwarn("DONE")
-                last_time_steps = numpy.append(last_time_steps, [int(i + 1)])
+                last_time_steps = np.append(last_time_steps, [int(i + 1)])
                 break
             rospy.logwarn("############### END Step=>" + str(i))
             #raw_input("Next Step...PRESS KEY")

@@ -7,13 +7,13 @@ wamv: #namespace
    
     work_space: # 3D cube in which Drone is allowed to move
       x_max: 100.0
-      x_min: -1.0
-      y_max: 100.0
-      y_min: -5.0
+      x_min: 50.0
+      y_max: 88.0
+      y_min: 82.0
 
     desired_point:
-      x: 58.0
-      y: 50.0
+      x: 50.0
+      y: 85.0
       z: 1.0
     desired_point_epsilon: 0.5
     max_distance_from_des_point: 30.0 # Maximum distance regitered in observations, has to be bigger than the largest distance of the workspace.

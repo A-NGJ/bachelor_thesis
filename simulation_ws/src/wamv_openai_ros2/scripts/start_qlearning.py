@@ -8,12 +8,12 @@ from gym import wrappers
 import rospy
 import rospkg
 # import our training environment
-from openai_ros.task_envs.wamv import wamv_nav_twosets_buoys
+from openai_ros.task_envs.wamv import wamv_nav
 
 
 if __name__ == '__main__':
 
-    rospy.init_node('wamv_nav_twosets_buoys_qlearn', anonymous=True, log_level=rospy.WARN)
+    rospy.init_node('wamv_nav_qlearn', anonymous=True, log_level=rospy.WARN)
 
     # Create the Gym environment
     env = gym.make('WamvNavTwoSetsBuoys-v0')

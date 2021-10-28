@@ -197,12 +197,12 @@ def RegisterOpenAI_Ros_Env(task_env, max_episode_steps=10000):
 
         register(
             id=task_env,
-            entry_point='openai_ros.task_envs.wamv.wamv_nav_twosets_buoys:WamvNavTwoSetsBuoysEnv',
+            entry_point='openai_ros.task_envs.wamv.wamv_nav:WamvNavTwoSetsBuoysEnv',
             max_episode_steps=max_episode_steps,
         )
 
         # import our training environment
-        from openai_ros.task_envs.wamv import wamv_nav_twosets_buoys
+        from openai_ros.task_envs.wamv import wamv_nav
 
     # Add here your Task Envs to be registered
     else:

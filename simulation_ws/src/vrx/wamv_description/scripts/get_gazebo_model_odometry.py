@@ -1,4 +1,6 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
+import os
+
 import rospy
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Header
@@ -7,11 +9,10 @@ from gazebo_msgs.srv import GetModelState, GetModelStateRequest
 
 class GazeboModelOdom(object):
     def __init__(self, robot_model_name, rate_hz=50.0):
-        # Get model name: rosservice call /gazebo/get_world_properties "{}"
-        odom_topic_name = "/"+str(robot_model_name)+"/odom"
+        odom_topic_name = f'/{robot_model_name}/odom'
         self.odom_pub = rospy.Publisher(odom_topic_name, Odometry)
 
-        rospy.loginfo("GazeboModelOdom is Waiting for service.../gazebo/get_model_state")
+        rospy.loginfo("GazeboModelOdom is waiting for service /gazebo/get_model_state")
         rospy.wait_for_service('/gazebo/get_model_state')
         self.get_model_srv = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
 
@@ -24,9 +25,8 @@ class GazeboModelOdom(object):
         self.model = GetModelStateRequest()
         self.model.model_name = robot_model_name
 
-        # Reset Value to True to reset counter when Time moves backwards ( reset sim )
-        # http://docs.ros.org/api/rospy/html/rospy.timer.Rate-class.html#sleep
         self.rate_object = rospy.Rate(hz=rate_hz, reset=True)
+
 
     def get_odometry_loop(self):
 
@@ -46,7 +46,7 @@ class GazeboModelOdom(object):
 
 if __name__ == "__main__":
     rospy.init_node('gazebo_model_odom_pubish_node')
-    robot_model_name = "wamv"
+    robot_model_name = 'wamv'
     rate_hz = 50.0
     gazebo_model_odom_obj = GazeboModelOdom(robot_model_name, rate_hz)
     gazebo_model_odom_obj.get_odometry_loop()
