@@ -1,0 +1,22 @@
+wamv: #namespace
+  task_and_robot_environment_name: 'WamvNavTwoSetsBuoys-v0'
+  ros_ws_abspath: "/home/angj/priv/bachelor_thesis/simulation_ws/"
+  rospackage_name: "vrx_gazebo"
+  launch_file_name: "vrx.launch"
+  #dqn params
+  gamma: 0.99
+  epsilon: 1.0
+  n_games: 50
+  max_steps: 1000
+  algorithm: "dqn"
+  lr: 0.01
+  mem_size: 40000
+  eps_min: 0
+  batch_size: 32
+  replace: 1000
+  eps_dec: 0.001
+  load_checkpoint: false
+
+results:
+  chkpt_dir: "/home/angj/priv/bachelor_thesis/simulation_ws/models/"
+  image_path: "/home/angj/priv/bachelor_thesis/simulation_ws/images/"

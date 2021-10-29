@@ -18,9 +18,9 @@ from util import (
 def main(agent_class, network_class, algo, args):
     env = make_env('PongNoFrameskip-v4')
     best_score = -np.inf
-    load_checkpoint = True
+    load_checkpoint = False
     n_games = 10
-    agent = agent_class(network=network_class, gamma=0.99, epsilon=0.0, lr=1e-4,
+    agent = agent_class(network=network_class, gamma=0.99, epsilon=1.0, lr=1e-4,
                         input_dims=(env.observation_space.shape),
                         n_actions=env.action_space.n, mem_size=40000, eps_min=0.0,
                         batch_size=32, replace=1000, eps_dec=1e-5,

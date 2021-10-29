@@ -75,19 +75,15 @@ if __name__ == '__main__':
             rospy.logwarn("Next action is:%d", action)
             # Execute the action in the environment and get feedback
             observation, reward, done, info = env.step(action)
-            image_r = observation[-3]
-            image_l = observation[-2]
-            image_m = observation[-1]
+            image_r = observation[-2]
+            image_l = observation[-1]
             img_dir = rospy.get_param('/results/image_path')
             image_r = cv2.cvtColor(image_r, cv2.COLOR_BGR2RGB)
             image_l = cv2.cvtColor(image_l, cv2.COLOR_BGR2RGB)
-            image_m = cv2.cvtColor(image_m, cv2.COLOR_BGR2RGB)
             cv2.imwrite(os.path.join(img_dir, f'image_r_{i}.jpg'), image_r)
             cv2.imwrite(os.path.join(img_dir, f'image_l_{i}.jpg'), image_l)
-            cv2.imwrite(os.path.join(img_dir, f'image_m_{i}.jpg'), image_m)
             image_r = np.array(image_r)
             image_l = np.array(image_l)
-            image_m = np.array(image_m)
             rospy.logdebug(f'!!! Image shape" {image_r.shape} !!!')
 
             cumulated_reward += reward

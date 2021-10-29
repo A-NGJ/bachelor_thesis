@@ -1,5 +1,6 @@
 import os
 
+import cv2
 import numpy
 
 # pylint: disable=import-error
@@ -178,32 +179,47 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         odom = self.odom()
         image_right = self.image_right()
         image_left = self.image_left()
-        image_front = self.image_front()
+        # image_front = self.image_front()
         base_position = odom.pose.pose.position
-        base_orientation_quat = odom.pose.pose.orientation
-        base_roll, base_pitch, base_yaw = self.get_orientation_euler(base_orientation_quat)
-        base_speed_linear = odom.twist.twist.linear
-        base_speed_angular_yaw = odom.twist.twist.angular.z
+        # base_orientation_quat = odom.pose.pose.orientation
+        # base_roll, base_pitch, base_yaw = self.get_orientation_euler(base_orientation_quat)
+        # base_speed_linear = odom.twist.twist.linear
+        # base_speed_angular_yaw = odom.twist.twist.angular.z
 
-        distance_from_desired_point = self.get_distance_from_desired_point(base_position)
+        # distance_from_desired_point = self.get_distance_from_desired_point(base_position)
 
         observation = []
         observation.append(round(base_position.x, self.dec_obs))
         observation.append(round(base_position.y, self.dec_obs))
 
-        observation.append(round(base_roll, self.dec_obs))
-        observation.append(round(base_pitch, self.dec_obs))
-        observation.append(round(base_yaw, self.dec_obs))
+        # observation.append(round(base_roll, self.dec_obs))
+        # observation.append(round(base_pitch, self.dec_obs))
+        # observation.append(round(base_yaw, self.dec_obs))
 
-        observation.append(round(base_speed_linear.x, self.dec_obs))
-        observation.append(round(base_speed_linear.y, self.dec_obs))
+        # observation.append(round(base_speed_linear.x, self.dec_obs))
+        # observation.append(round(base_speed_linear.y, self.dec_obs))
 
-        observation.append(round(base_speed_angular_yaw, self.dec_obs))
+        # observation.append(round(base_speed_angular_yaw, self.dec_obs))
 
-        observation.append(round(distance_from_desired_point, self.dec_obs))
-        observation.append(image_right)
-        observation.append(image_left)
-        observation.append(image_front)
+        # observation.append(round(distance_from_desired_point, self.dec_obs))
+
+        image_right = cv2.cvtColor(image_right, cv2.COLOR_BGR2GRAY)
+        image_right = image_right[:400, ...]
+        image_right = cv2.resize(image_right, (84, 84), interpolation=cv2.INTER_AREA)
+
+        image_left = cv2.cvtColor(image_left, cv2.COLOR_BGR2GRAY)
+        image_left = image_right[:400, ...]
+        image_left = cv2.resize(image_left, (84, 84), interpolation=cv2.INTER_AREA)
+
+        image = numpy.concatenate((
+            image_left[:, :image_left.shape[1]//2],
+            image_right[:, image_right.shape[1]//2:]
+        ), axis=1)
+
+        image = numpy.array(image, dtype=numpy.float32).reshape(1, 84, 84)
+        image = image / 255.0
+
+        observation.append(image)
 
         return observation
 
@@ -216,9 +232,9 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
         is_inside_corridor = self.is_inside_workspace(current_position)
         has_reached_des_point = self.is_in_desired_position(
-                                        current_position,
-                                        self.desired_point_epsilon
-                                    )
+            current_position,
+            self.desired_point_epsilon
+        )
 
         done = not(is_inside_corridor) or has_reached_des_point
 
@@ -246,7 +262,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
         self.previous_distance_from_des_point = distance_from_des_point
 
-        rospy.logdebug('reward={reward}')
+        rospy.logdebug(f'reward={reward}')
         self.cumulated_reward += reward
         rospy.logdebug(f'Cumulated_reward={self.cumulated_reward}')
         self.cumulated_steps += 1
@@ -310,13 +326,13 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
     def is_inside_workspace(self,current_position):
         is_inside = False
 
-        rospy.loginfo('#'*20)
-        rospy.loginfo(f'Current position: {current_position}')
-        rospy.loginfo(f'work_space_x_max: {self.work_space_x_max}, '
-                      f'work_space_x_min: {self.work_space_x_min}')
-        rospy.loginfo(f'work_space_y_max: {self.work_space_y_max}, '
-                      f'work_space_y_min: {self.work_space_y_min}')
-        rospy.loginfo('#'*20)
+        current_position_str = str(current_position)
+        current_position_str = ' '.join(current_position_str.split())
+        rospy.loginfo(f'Current position: {current_position_str}')
+        # rospy.loginfo(f'work_space_x_max: {self.work_space_x_max}, '
+        #               f'work_space_x_min: {self.work_space_x_min}')
+        # rospy.loginfo(f'work_space_y_max: {self.work_space_y_max}, '
+        #               f'work_space_y_min: {self.work_space_y_min}')
 
         if current_position.x > self.work_space_x_min and\
             current_position.x <= self.work_space_x_max:
