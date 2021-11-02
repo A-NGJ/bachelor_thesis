@@ -1,14 +1,30 @@
 import collections
+import functools
 import os
+import yaml
 
 import cv2
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
 
+from enums import Dir
 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
 
-def plot_learning_curve(x, scores, epsilons, filename):
+
+def make_dir(path):
+    def decorator_make_dir(func):
+        @functools.wraps(func)
+        def wrapper_make_dir(*args, **kwargs):
+            if not os.path.exists(path):
+                os.makedirs(path)
+            func(*args, **kwargs)
+        return wrapper_make_dir
+    return decorator_make_dir
+
+
+@make_dir(Dir.PLOT.value)
+def plot_learning_curve(x, scores, epsilons, filename, avg_range, *, extension='.png'):
     fig = plt.figure()
     ax = fig.add_subplot(111, label='1')
     ax2 = fig.add_subplot(111, label='2', frame_on=False)
@@ -22,7 +38,7 @@ def plot_learning_curve(x, scores, epsilons, filename):
     N = len(scores)
     running_avg = np.empty(N)
     for t in range(N):
-        running_avg[t] = np.mean(scores[max(0, t-100):(t+1)])
+        running_avg[t] = np.mean(scores[max(0, t-avg_range):(t+1)])
 
     ax2.scatter(x, running_avg, color='C1')
     ax2.axes.get_xaxis().set_visible(False)
@@ -31,15 +47,36 @@ def plot_learning_curve(x, scores, epsilons, filename):
     ax2.yaxis.set_label_position('right')
     ax2.tick_params(axis='y', colors='C1')
 
-    dirname = os.path.dirname(filename)
-    if not os.path.exists(dirname):
-        os.mkdir(dirname)
-    plt.savefig(filename)
+    dir_ = f'{Dir.PLOT.value}{filename}{extension}'
+    plt.savefig(dir_)
 
 
-def plot_loss_history(loss):
-    plt.plot(loss)
-    plt.show()
+@make_dir(Dir.PLOT.value)
+def plot_loss_history(loss, filename, *, extenstion='.png'):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(np.arange(len(loss)), loss)
+
+    ax.set_xlabel('Epochs', color='C0')
+    ax.set_ylabel('Loss', color='C0')
+    ax.tick_params(axis='x', colors='C0')
+    ax.tick_params(axis='y', colors='C0')
+
+    dir_ = f'{Dir.PLOT.value}{filename}_loss{extenstion}'
+    plt.savefig(dir_)
+
+
+@make_dir(Dir.PARAMS.value)
+def save_parameters(parameters, filename, *, extension='.yaml'):
+    dir_ = f'{Dir.PARAMS.value}{filename}{extension}'
+    with open(dir_, 'w', encoding='utf-8') as yml:
+        yaml.dump(parameters, yml)
+
+
+@make_dir(Dir.RESULTS.value)
+def save_results(results, filename, *, extension='.npy'):
+    dir_ = f'{Dir.RESULTS.value}{filename}{extension}'
+    np.save(dir_, results)
 
 
 class RepeatActionAndMaxFrame(gym.Wrapper):

@@ -17,7 +17,7 @@
           <izz>0.1</izz>
         </inertia>
       </inertial>
-      <collision name="collision_inner">
+      <!-- <collision name="collision_inner">
         <pose>0 0 -0.02 0 0 0</pose>
         <geometry>
           <cylinder>
@@ -34,7 +34,7 @@
             <length>0.2</length>
           </cylinder>
         </geometry>
-      </collision>
+      </collision> -->
       <visual name="visual">
         <geometry>
 	        <mesh><uri>model://surmark950400/mesh/surmark950400.dae</uri></mesh>

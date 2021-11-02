@@ -2,7 +2,7 @@
 <launch>
   <env name="ROSCONSOLE_CONFIG_FILE" value="$(find vrx_gazebo)/config/custom_rosconsole.conf"/>
   <!-- Gazebo world to load -->
-  <arg name="world" default="$(find vrx_gazebo)/worlds/main_slalom.world" />
+  <arg name="world" default="$(find vrx_gazebo)/worlds/main_slalom_normal.world" />
   <!-- If true, run gazebo GUI -->
   <arg name="gui" default="false" />
   <!-- If true, run gazebo in verbose mode -->
@@ -19,12 +19,12 @@
   <arg name="pinger_params" default="$(find vrx_gazebo)/config/pinger.yaml"/>
 
   <!-- Initial USV location and attitude-->
-  <arg name="x" default="98" />
-  <arg name="y" default="85" />
+  <arg name="x" default="102" />
+  <arg name="y" default="60" />
   <arg name="z" default="0.3" />
   <arg name="P" default="0" />
   <arg name="R" default="0" />
-  <arg name="Y" default="-2.8" />
+  <arg name="Y" default="3.14" />
 
   <!-- Allow user specified thruster configurations
        H = stern trusters on each hull

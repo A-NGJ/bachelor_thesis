@@ -1,0 +1,11 @@
+algorithm: dqn
+batch_size: 32
+env_name: PongNoFrameskip-v4
+eps_dec: 1.0e-05
+eps_min: 0.0
+epsilon: 1.0
+gamma: 0.99
+lr: 0.0001
+mem_size: 40000
+n_games: 3
+replace: 1000

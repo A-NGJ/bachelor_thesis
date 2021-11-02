@@ -77,5 +77,8 @@ class BaseAgent():
         self.q_eval.load_checkpoint()
         self.q_next.load_checkpoint()
 
+    def zero_loss_history(self):
+        self.loss_history = []
+
     def learn(self):
         raise NotImplementedError()
