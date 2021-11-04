@@ -7,6 +7,7 @@ import cv2
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
+import rospy
 
 from enums import Dir
 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
@@ -126,43 +127,46 @@ class RepeatActionAndMaxFrame(gym.Wrapper):
 class PreprocessFrame(gym.ObservationWrapper):
     def __init__(self, shape, env=None):
         super().__init__(env)
-        self.shape = shape
-        # self.shape = (shape[2], shape[0], shape[1])
-        # self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
-        #                                         shape=self.shape, dtype=np.float32)
+        self.shape = (shape[2], shape[0], shape[1])
+        self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
+                                                shape=self.shape, dtype=np.float32)
 
-    def observation(self, observation):
-        images = observation[-2:]
-        for i in range(2):
-            images[i] = cv2.cvtColor(images[i], cv2.COLOR_BGR2GRAY)
-            images[i] = images[i][:400, ...]
-            images[i] = cv2.resize(images[i], self.shape[:-1], interpolation=cv2.INTER_AREA)
+    # def observation(self, observation):
+    #     images = observation[-2:]
+    #     for i in range(2):
+    #         images[i] = cv2.cvtColor(images[i], cv2.COLOR_BGR2GRAY)
+    #         images[i] = images[i][:400, ...]
+    #         images[i] = cv2.resize(images[i], self.shape[:-1], interpolation=cv2.INTER_AREA)
 
-        new_image = np.concatenate(
-            [img[:, :img.shape[1]//2] for img in images],
-            axis=1
-        )
+    #     new_image = np.concatenate(
+    #         [img[:, :img.shape[1]//2] for img in images],
+    #         axis=1
+    #     )
 
         # new_frame = cv2.cvtColor(observation, cv2.COLOR_RGB2GRAY)
         # resized_screen = cv2.resize(new_frame, self.shape[1:],
         #                            interpolation=cv2.INTER_AREA)
 
-        new_image = np.array(new_image, dtype=np.uint8).reshape(self.shape)
-        new_image = new_image / 255.0
+        # new_image = np.array(new_image, dtype=np.uint8).reshape(self.shape)
+        # new_image = new_image / 255.0
 
-        return new_image
+        # return new_image
+
+    def observation(self, observation):
+        return observation
 
 
 class StackFrames(gym.ObservationWrapper):
     def __init__(self, env, repeat):
         super().__init__(env)
+        # self.shape = (shape[2], shape[0], shape[1])
         self.observation_space = gym.spaces.Box(
             env.observation_space.low.repeat(repeat, axis=0),
             env.observation_space.high.repeat(repeat, axis=0),
             dtype=np.float32)
         self.stack = collections.deque(maxlen=repeat)
 
-    def reset(self):
+    def reset(self, **kwargs):
         self.stack.clear()
         obs = self.env.reset()
         for _ in range(self.stack.maxlen):
@@ -176,13 +180,13 @@ class StackFrames(gym.ObservationWrapper):
         return np.array(self.stack).reshape(self.observation_space.low.shape)
 
 
-def make_env(env_name, shape=(84, 84, 1), repeat=4, clip_rewards=False,
+def make_env(env_name, shape=(60, 80, 3), repeat=5, clip_rewards=False,
              no_ops=0, fire_first=False):
     #env = gym.make(env_name)
     env = StartOpenAI_ROS_Environment(env_name)
     #env = RepeatActionAndMaxFrame(env, repeat, clip_rewards, no_ops, fire_first)
-    # env = PreprocessFrame(shape, env)
-    # env = StackFrames(env, repeat)
+    env = PreprocessFrame(shape, env)
+    env = StackFrames(env, repeat)
 
     return env
 

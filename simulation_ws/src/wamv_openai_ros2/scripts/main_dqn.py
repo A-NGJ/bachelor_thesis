@@ -3,6 +3,7 @@ import cv2
 from datetime import datetime
 import numpy as np
 import os
+import torch as T
 
 import rospy
 
@@ -28,6 +29,7 @@ from util import (
 
 #pylint: disable=too-many-locals
 def main(agent_class, network_class, algo, args):
+    T.cuda.empty_cache()
     rospy.init_node('wamv_dqn', anonymous=True, log_level=rospy.INFO)
 
     env = make_env(args.env_name)
@@ -37,7 +39,7 @@ def main(agent_class, network_class, algo, args):
     best_score = -np.inf
     agent = agent_class(network=network_class, gamma=args.gamma,
                         epsilon=args.epsilon, lr=args.lr,
-                        input_dims=(3, 240, 240),
+                        input_dims=env.observation_space.shape,
                         n_actions=env.action_space.n, mem_size=args.mem_size, eps_min=args.eps_min,
                         batch_size=args.batch_size, replace=args.replace, eps_dec=args.eps_dec,
                         chkpt_dir=Dir.CHECKPOINT.value, algo=algo,
@@ -68,13 +70,13 @@ def main(agent_class, network_class, algo, args):
 
         game_steps = 0
         while not done:
-            action = agent.choose_action(observation[2])
+            action = agent.choose_action(observation)
             observation_, reward, done, _ = env.step(action)
             score += reward
 
             if not args.load_checkpoint:
-                agent.store_transition(observation[2], action, reward,
-                                       observation_[2], int(done))
+                agent.store_transition(observation, action, reward,
+                                       observation_, int(done))
                 agent.learn()
             observation = observation_
             n_steps += 1

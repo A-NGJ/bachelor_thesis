@@ -1,6 +1,6 @@
 wamv: #namespace
     task_and_robot_environment_name: 'WamvNavTwoSetsBuoys-v0'
-    ros_ws_abspath: "/home/angj/priv/bachelor_thesis/simulation_ws/"
+    ros_ws_abspath: "${SIMULATION_DIR}/bachelor_thesis/simulation_ws/"
     rospackage_name: "vrx_gazebo"
     launch_file_name: "vrx.launch"
     #qlearn parameters
@@ -12,4 +12,4 @@ wamv: #namespace
     nsteps: 10000
 
 results:
-    image_path: "/home/angj/priv/bachelor_thesis/simulation_ws/images/"
+    image_path: "${SIMULATION_DIR}/bachelor_thesis/simulation_ws/images/"

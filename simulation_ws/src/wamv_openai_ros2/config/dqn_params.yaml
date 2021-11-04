@@ -1,20 +1,20 @@
 wamv: #namespace
   task_and_robot_environment_name: 'WamvNavTwoSetsBuoys-v0'
-  ros_ws_abspath: "/home/angj/priv/bachelor_thesis/simulation_ws/"
+  ros_ws_abspath: "${SIMULATION_DIR}/bachelor_thesis/simulation_ws/"
   environment_type: "normal"
   rospackage_name: "vrx_gazebo"
   launch_file_name: "vrx.launch"
   #dqn params
   gamma: 0.99
   epsilon: 1.0
-  n_games: 100
+  n_games: 300
   max_steps: 1000
-  algorithm: "dqn"
+  algorithm: "dueling-ddqn"
   lr: 0.0001
-  mem_size: 3000
-  eps_min: 0.05
+  mem_size: 10000
+  eps_min: 0.00
   batch_size: 32
-  replace: 2000
+  replace: 500
   eps_dec: 0.0001
   load_checkpoint: false
 

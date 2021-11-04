@@ -147,11 +147,13 @@ class StackFrames(gym.ObservationWrapper):
         obs = self.env.reset()
         for _ in range(self.stack.maxlen):
             self.stack.append(obs)
-
+        
+        raise Exception(np.array(self.stack).shape)
         return np.array(self.stack).reshape(self.observation_space.low.shape)
 
     def observation(self, obs):
         self.stack.append(obs)
+        raise Exception(np.array(self.stack).shape)
 
         return np.array(self.stack).reshape(self.observation_space.low.shape)
         

@@ -73,6 +73,7 @@ class DuelingDDQNAgent(DuelingDQNAgent):
 
         loss = self.q_eval.loss(q_target, q_pred).to(self.q_eval.device)
         loss.backward()
+        self.loss_history.append(loss.cpu().detach().numpy())
 
         self.q_eval.optimizer.step()
         self.learn_step_counter += 1

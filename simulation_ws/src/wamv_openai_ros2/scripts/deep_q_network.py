@@ -13,11 +13,12 @@ class DeepQNetworkBase(nn.Module):
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name)
 
-        self.conv1 = nn.Conv2d(input_dims[0], 32, 8, stride=4)
-        self.max_pool1 = nn.MaxPool2d(2, stride=4)
-        self.conv2 = nn.Conv2d(32, 64, 4, stride=2)
-        self.max_pool2 = nn.MaxPool2d(2, stride=2)
+        self.conv1 = nn.Conv2d(input_dims[0], 32, 3, stride=1)
+        self.max_pool1 = nn.MaxPool2d(2, stride=1)
+        self.conv2 = nn.Conv2d(32, 64, 3, stride=1)
+        self.max_pool2 = nn.MaxPool2d(2, stride=1)
         self.conv3 = nn.Conv2d(64, 64, 3, stride=1)
+        self.max_pool3 = nn.MaxPool2d(2, stride=1)
 
     def calculate_conv_output_dims(self, input_dims):
         state = T.zeros(1, *input_dims)
@@ -26,6 +27,7 @@ class DeepQNetworkBase(nn.Module):
         dims = self.conv2(dims)
         dims = self.max_pool2(dims)
         dims = self.conv3(dims)
+        dims = self.max_pool3(dims)
         return int(np.prod(dims.size()))
 
     def forward(self, state):
@@ -47,8 +49,8 @@ class DeepQNetwork(DeepQNetworkBase):
         super().__init__(name, input_dims, chkpt_dir)
         fc_input_dims = self.calculate_conv_output_dims(input_dims)
 
-        self.fc1 = nn.Linear(fc_input_dims, 512)
-        self.fc2 = nn.Linear(512, n_actions)
+        self.fc1 = nn.Linear(fc_input_dims, 128)
+        self.fc2 = nn.Linear(128, n_actions)
 
         self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
         self.loss = nn.MSELoss()
@@ -61,6 +63,7 @@ class DeepQNetwork(DeepQNetworkBase):
         conv2 = F.relu(self.conv2(conv1))
         conv2 = self.max_pool2(conv2)
         conv3 = F.relu(self.conv3(conv2))
+        conv3 = self.max_pool3(conv3)
         # conv3 shape is BS x n_filters x H x W
         conv_state = conv3.view(conv3.size()[0], -1)
         flat1 = F.relu(self.fc1(conv_state))
@@ -74,9 +77,9 @@ class DuelingDeepQNetwork(DeepQNetworkBase):
         super().__init__(name, input_dims, chkpt_dir)
         fc_input_dims = self.calculate_conv_output_dims(input_dims)
 
-        self.fc1 = nn.Linear(fc_input_dims, 512)
-        self.V = nn.Linear(512, 1)
-        self.A = nn.Linear(512, n_actions)
+        self.fc1 = nn.Linear(fc_input_dims, 96)
+        self.V = nn.Linear(96, 1)
+        self.A = nn.Linear(96, n_actions)
 
         self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
         self.loss = nn.MSELoss()
@@ -85,8 +88,11 @@ class DuelingDeepQNetwork(DeepQNetworkBase):
 
     def forward(self, state):
         conv1 = F.relu(self.conv1(state))
+        conv1 = self.max_pool1(conv1)
         conv2 = F.relu(self.conv2(conv1))
+        conv2 = self.max_pool2(conv2)
         conv3 = F.relu(self.conv3(conv2))
+        conv3 = self.max_pool3(conv3)
         # conv3 shape is BS x n_filters x H x W
         conv_state = conv3.view(conv3.size()[0], -1)
         flat1 = F.relu(self.fc1(conv_state))
