@@ -21,7 +21,7 @@ from deep_q_network import (
 from util import (
     make_env,
     plot_learning_curve,
-    plot_loss_history,
+    plot_history,
     save_parameters,
     save_results,
     Namespace
@@ -60,7 +60,7 @@ def main(agent_class, network_class, algo, args):
         fname = fname + '_eval'
 
     n_steps = 0
-    scores, eps_history, steps_array, loss_history = [], [], [], []
+    scores, eps_history, steps_array, loss_history, q_history = [], [], [], [], []
 
     for i in range(args.n_games):
         done = False
@@ -86,6 +86,7 @@ def main(agent_class, network_class, algo, args):
 
         if not args.load_checkpoint:
             loss_history.append(np.mean(agent.loss_history))
+            q_history.append(np.mean(agent.q_history))
         scores.append(score)
         steps_array.append(n_steps)
         eps_history.append(agent.epsilon)
@@ -105,7 +106,8 @@ def main(agent_class, network_class, algo, args):
             best_score = avg_score
 
     if not args.load_checkpoint:
-        plot_loss_history(loss_history, fname)
+        plot_history('loss', loss_history, fname)
+        plot_history('qval', q_history, fname)
         plot_learning_curve(steps_array, scores, eps_history,
                         fname, avg_range=args.n_games//5)
         save_parameters(args.__dict__, fname)

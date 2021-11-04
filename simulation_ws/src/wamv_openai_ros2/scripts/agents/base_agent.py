@@ -36,6 +36,7 @@ class BaseAgent():
                               chkpt_dir=self.chkpt_dir)
 
         self.loss_history = []
+        self.q_history = []
 
     def choose_action(self, observation):
         if np.random.random() > self.epsilon:

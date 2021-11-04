@@ -53,17 +53,17 @@ def plot_learning_curve(x, scores, epsilons, filename, avg_range, *, extension='
 
 
 @make_dir(Dir.PLOT.value)
-def plot_loss_history(loss, filename, *, extenstion='.png'):
+def plot_history(param_name, values, filename, *, extenstion='.png'):
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.plot(np.arange(len(loss)), loss)
+    ax.plot(np.arange(len(values)), values)
 
     ax.set_xlabel('Epochs', color='C0')
-    ax.set_ylabel('Loss', color='C0')
+    ax.set_ylabel(param_name, color='C0')
     ax.tick_params(axis='x', colors='C0')
     ax.tick_params(axis='y', colors='C0')
 
-    dir_ = f'{Dir.PLOT.value}{filename}_loss{extenstion}'
+    dir_ = f'{Dir.PLOT.value}{filename}_{param_name}{extenstion}'
     plt.savefig(dir_)
 
 
