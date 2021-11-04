@@ -157,7 +157,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.set_propellers_speed(
             right_propeller_speed,
             left_propeller_speed,
-            time_sleep=0.5
+            time_sleep=0.25
         )
 
         return True
@@ -204,7 +204,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.set_propellers_speed(
             right_propeller_speed,
             left_propeller_speed,
-            time_sleep=0.5
+            time_sleep=0.25
         )
 
         rospy.logdebug(f'END Set Action {action}')
@@ -432,7 +432,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
         current_position_str = str(current_position)
         current_position_str = ' '.join(current_position_str.split())
-        if self.current_position_cntr %2 == 0:
+        if self.current_position_cntr %3 == 0:
             rospy.loginfo(f'Current position: {current_position_str}')
             self.current_position_cntr = 0
         self.current_position_cntr += 1

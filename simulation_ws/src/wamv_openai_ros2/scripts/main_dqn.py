@@ -111,7 +111,7 @@ def main(agent_class, network_class, algo, args):
         plot_learning_curve(steps_array, scores, eps_history,
                         fname, avg_range=args.n_games//5)
         save_parameters(args.__dict__, fname)
-        for name, result in zip(('scores', 'eps', 'loss'), (scores, eps_history, loss_history)):
+        for name, result in zip(('scores', 'eps', 'loss', 'qval'), (scores, eps_history, loss_history, q_history)):
             save_results(result, f'{fname}_{name}')
 
 
