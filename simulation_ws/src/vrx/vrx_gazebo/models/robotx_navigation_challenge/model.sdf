@@ -2,83 +2,238 @@
 <sdf version="1.6">
   <model name="robotx_navigation_challenge">
       <include>
-        <name>gate_red_17</name>
+        <name>gate_red_48</name>
         <pose>-40 -6 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_16</name>
+        <name>gate_red_47</name>
+        <pose>-39 -5 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_46</name>
+        <pose>-37 -4 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_45</name>
         <pose>-35 -3 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_15</name>
+        <name>gate_red_44</name>
+        <pose>-34 -2 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_43</name>
+        <pose>-32 -1 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_42</name>
         <pose>-30 0 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_14</name>
+        <name>gate_red_41</name>
+        <pose>-29 1 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_40</name>
+        <pose>-27 2 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_39</name>
         <pose>-25 3 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>
       </include>
       <include>
-        <name>gate_red_13</name>
+        <name>gate_red_38</name>
+        <pose>-24 4 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_37</name>
+        <pose>-22 5 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_36</name>
         <pose>-20 6 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_12</name>
+        <name>gate_red_35</name>
+        <pose>-19 7 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_34</name>
+        <pose>-17 8 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_33</name>
         <pose>-15 9 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_11</name>
+        <name>gate_red_32</name>
+        <pose>-12 10 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_31</name>
         <pose>-10 12 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_10</name>
+        <name>gate_red_30</name>
+        <pose>-9 13 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_29</name>
+        <pose>-7 14 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_28</name>
         <pose>-5 15 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_9</name>
+        <name>gate_red_27</name>
+        <pose>-4 16 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_26</name>
+        <pose>-3 17 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_25</name>
         <pose>0 18 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_8</name>
+        <name>gate_red_24</name>
+        <pose>1 18 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_23</name>
+        <pose>3 18 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_22</name>
         <pose>5  19 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_7</name>
+        <name>gate_red_21</name>
+        <pose>7 19 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_20</name>
+        <pose>8 19 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_19</name>
         <pose>10 20 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_6</name>
+        <name>gate_red_18</name>
+        <pose>11 20 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_17</name>
+        <pose>13 19 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_16</name>
         <pose>15 19 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_5</name>
+        <name>gate_red_15</name>
+        <pose>16 18 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_14</name>
+        <pose>18 19 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_13</name>
         <pose>20 18 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_4</name>
+        <name>gate_red_12</name>
+        <pose>22 17 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_11</name>
+        <pose>24 16 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_10</name>
         <pose>25 15 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_3</name>
+        <name>gate_red_9</name>
+        <pose>26 14 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_8</name>
+        <pose>28 13 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_7</name>
         <pose>30 12 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_red_2</name>
+        <name>gate_red_6</name>
+        <pose>31  11 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_5</name>
+        <pose>33 10 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_4</name>
         <pose>35 9 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_3</name>
+        <pose>36 8 0 0 0 0 </pose>
+        <uri>model://surmark950410</uri>      
+      </include>
+      <include>
+        <name>gate_red_2</name>
+        <pose>38 7 0 0 0 0 </pose>
         <uri>model://surmark950410</uri>      
       </include>
       <include>
@@ -87,83 +242,243 @@
         <uri>model://surmark950410</uri>      
       </include>
       <include>
-        <name>gate_green_17</name>
+        <name>gate_green_49</name>
         <pose>-40 -24 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_16</name>
+        <name>gate_green_48</name>
+        <pose>-39 -23 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_47</name>
+        <pose>-38 -22 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_46</name>
         <pose>-35 -21 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_15</name>
+        <name>gate_green_45</name>
+        <pose>-34 -20 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_44</name>
+        <pose>-32 -19 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_42</name>
         <pose>-30 -18 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_14</name>
+        <name>gate_green_42</name>
+        <pose>-29 -17 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_41</name>
+        <pose>-27 -16 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_40</name>
         <pose>-25 -15 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_13</name>
+        <name>gate_green_39</name>
+        <pose>-24 -14 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_38</name>
+        <pose>-22 -13 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_37</name>
         <pose>-20 -12 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_12</name>
+        <name>gate_green_36</name>
+        <pose>-19 -11 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_35</name>
+        <pose>-17 -10 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_34</name>
         <pose>-15 -9 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_11</name>
+        <name>gate_green_33</name>
+        <pose>-14 -8 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_32</name>
+        <pose>-12 -7 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_31</name>
         <pose>-10 -6 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_10</name>
+        <name>gate_green_30</name>
+        <pose>-9 -5 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_29</name>
+        <pose>-7 -4 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_28</name>
         <pose>-5 -3 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_9</name>
+        <name>gate_green_27</name>
+        <pose>-3 -2 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_26</name>
+        <pose>-2 -1 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_25</name>
         <pose>0 0 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_8</name>
+        <name>gate_green_24</name>
+        <pose>1 0 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_23</name>
+        <pose>3 1 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_22</name>
         <pose>5 1 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_7</name>
+        <name>gate_green_21</name>
+        <pose>7 1 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_20</name>
+        <pose>9 2 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_19</name>
         <pose>10 2 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_6</name>
+        <name>gate_green_18</name>
+        <pose>12 2 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>    
+      <include>
+        <name>gate_green_17</name>
+        <pose>14 1 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_16</name>
         <pose>15 1 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_5</name>
+        <name>gate_green_15</name>
+        <pose>16 1 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_14</name>
+        <pose>18 0 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_13</name>
         <pose>20 0 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_4</name>
+        <name>gate_green_12</name>
+        <pose>22 -1 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_11</name>
+        <pose>24 -2 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_10</name>
         <pose>25 -3 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_3</name>
+        <name>gate_green_9</name>
+        <pose>26 -4 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_8</name>
+        <pose>28 -5 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_7</name>
         <pose>30 -6 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
-        <name>gate_green_2</name>
+        <name>gate_green_6</name>
+        <pose>31 -7 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_5</name>
+        <pose>33 -8 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_4</name>
         <pose>35 -9 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_3</name>
+        <pose>36 -10 0 0 0 0 </pose>
+        <uri>model://surmark950400</uri>      
+      </include>
+      <include>
+        <name>gate_green_2</name>
+        <pose>38 -11 0 0 0 0 </pose>
         <uri>model://surmark950400</uri>      
       </include>
       <include>
