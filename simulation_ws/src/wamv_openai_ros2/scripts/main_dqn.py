@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-import cv2
 from datetime import datetime
 import numpy as np
-import os
 import torch as T
 
 import rospy

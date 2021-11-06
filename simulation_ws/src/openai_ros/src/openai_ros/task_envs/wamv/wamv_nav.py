@@ -216,6 +216,8 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         image_right = self.image_right()
         image_left = self.image_left()
         # image_front = self.image_front()
+        # cv2.imshow('front', image_front)
+        # cv2.waitKey(0)
         base_position = odom.pose.pose.position
         # base_orientation_quat = odom.pose.pose.orientation
         # base_roll, base_pitch, base_yaw = self.get_orientation_euler(base_orientation_quat)
@@ -269,8 +271,8 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         image = image_red + image_green
         image = cv2.resize(image, (60, 80), interpolation=cv2.INTER_AREA)
 
+        image = numpy.array(image, dtype=numpy.int8).reshape(3, image.shape[0], image.shape[1])
         image = cv2.normalize(image, None, 0, 1, cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-        image = numpy.array(image, dtype=numpy.float32).reshape(3, image.shape[0], image.shape[1])
 
         observation.append(image)
 
@@ -317,7 +319,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         if not done:
             # If there has been a decrease in the distance to the desired point, we reward it
             if distance_difference < 0.0:
-                reward = self.closer_to_point_reward
+                reward = 0
             else:
                 reward = -self.closer_to_point_reward
 
