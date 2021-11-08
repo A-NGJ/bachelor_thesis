@@ -198,6 +198,12 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         elif action == Actions.RIGHT.value: # Turn Right
             right_propeller_speed = -1*self.propeller_high_speed
             left_propeller_speed = self.propeller_high_speed
+        elif action == Actions.RIGHT45.value:
+            right_propeller_speed = -0.5*self.propeller_high_speed
+            left_propeller_speed = 0.5*self.propeller_high_speed
+        elif action == Actions.LEFT45.value:
+            right_propeller_speed = 0.5*self.propeller_high_speed
+            left_propeller_speed = 0.5*self.propeller_high_speed
         else:
             raise ValueError(f'Invalid action: {action}')
 
@@ -301,7 +307,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
     def is_in_track(self):
         current_position = Point()
         current_position.x, current_position.y = self._get_current_pos()
-        if current_position.x - self.desired_point_epsilon > self.last_chkpt[0].x\
+        if current_position.x - 5 > self.last_chkpt[0].x\
             or self.is_beyond_track:
             return False
         return True

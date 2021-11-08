@@ -6,6 +6,8 @@ class Actions(Enum):
     BACKWARD = 1
     LEFT = 2
     RIGHT = 3
+    LEFT45 = 4
+    RIGHT45 = 5
 
 
 class ColorBoundaries:

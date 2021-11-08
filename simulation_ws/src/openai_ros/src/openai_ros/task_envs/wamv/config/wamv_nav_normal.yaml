@@ -1,5 +1,5 @@
 wamv: #namespace
-    n_actions: 4 # Forwards, Backwards, TurnLeft and TurnRight
+    n_actions: 6 # Forwards, Backwards, TurnLeft and TurnRight
     
     propeller_high_speed: 1.0 # High Propeller Speed             
     propeller_low_speed: 0.2 # Low Propeller Speed

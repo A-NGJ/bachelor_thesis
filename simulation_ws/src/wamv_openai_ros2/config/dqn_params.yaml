@@ -8,7 +8,6 @@ wamv: #namespace
   gamma: 0.99
   epsilon: 1.0
   n_games: 300
-  
   max_steps: 1000
   algorithm: "dueling-ddqn"
   lr: 0.00025
