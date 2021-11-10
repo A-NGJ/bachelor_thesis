@@ -8,6 +8,8 @@ class Actions(Enum):
     RIGHT = 3
     LEFT45 = 4
     RIGHT45 = 5
+    LEFT30 = 6
+    RIGHT30 = 7
 
 
 class ColorBoundaries:

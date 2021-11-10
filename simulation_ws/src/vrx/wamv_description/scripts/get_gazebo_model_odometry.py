@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import os
 
 import rospy
 from nav_msgs.msg import Odometry
@@ -10,7 +9,7 @@ from gazebo_msgs.srv import GetModelState, GetModelStateRequest
 class GazeboModelOdom(object):
     def __init__(self, robot_model_name, rate_hz=50.0):
         odom_topic_name = f'/{robot_model_name}/odom'
-        self.odom_pub = rospy.Publisher(odom_topic_name, Odometry)
+        self.odom_pub = rospy.Publisher(odom_topic_name, Odometry, queue_size=70)
 
         rospy.loginfo("GazeboModelOdom is waiting for service /gazebo/get_model_state")
         rospy.wait_for_service('/gazebo/get_model_state')

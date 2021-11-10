@@ -203,7 +203,13 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
             left_propeller_speed = 0.5*self.propeller_high_speed
         elif action == Actions.LEFT45.value:
             right_propeller_speed = 0.5*self.propeller_high_speed
-            left_propeller_speed = 0.5*self.propeller_high_speed
+            left_propeller_speed = -0.5*self.propeller_high_speed
+        elif action == Actions.LEFT30.value:
+            right_propeller_speed = 0.3*self.propeller_high_speed
+            left_propeller_speed = -0.3*self.propeller_high_speed
+        elif action == Actions.RIGHT30.value:
+            right_propeller_speed = -0.3*self.propeller_high_speed
+            left_propeller_speed = 0.3*self.propeller_high_speed
         else:
             raise ValueError(f'Invalid action: {action}')
 
@@ -307,7 +313,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
     def is_in_track(self):
         current_position = Point()
         current_position.x, current_position.y = self._get_current_pos()
-        if current_position.x - 5 > self.last_chkpt[0].x\
+        if current_position.x - 3 > self.last_chkpt[0].x\
             or self.is_beyond_track:
             return False
         return True
@@ -325,7 +331,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         if not done:
             # If there has been a decrease in the distance to the desired point, we reward it
             if distance_difference < 0.0:
-                reward = 0
+                reward = self.closer_to_point_reward
             else:
                 reward = -self.closer_to_point_reward
 

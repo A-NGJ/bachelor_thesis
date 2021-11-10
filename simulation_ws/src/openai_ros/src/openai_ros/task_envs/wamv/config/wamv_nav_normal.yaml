@@ -1,5 +1,5 @@
 wamv: #namespace
-    n_actions: 6 # Forwards, Backwards, TurnLeft and TurnRight
+    n_actions: 8 # Forwards, Backwards, TurnLeft and TurnRight
     
     propeller_high_speed: 1.0 # High Propeller Speed             
     propeller_low_speed: 0.2 # Low Propeller Speed
@@ -21,5 +21,5 @@ wamv: #namespace
     number_decimals_precision_obs: 1
 
     done_reward: 500.0 # reward
-    closer_to_point_reward: 5.0 # reward
+    closer_to_point_reward: 10.0 # reward
     checkpoint_reward: 25.0 # reward
