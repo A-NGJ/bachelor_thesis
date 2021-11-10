@@ -11,11 +11,11 @@ from gym import spaces
 from openai_ros.openai_ros_common import ROSLauncher
 from openai_ros.robot_envs import wamv_env
 from openai_ros.task_envs.task_commons import LoadYamlFileParamsTest
-from openai_ros.task_envs.wamv.utils import Actions
+from openai_ros.task_envs.wamv import utils
 from geometry_msgs.msg import Point
 from geometry_msgs.msg import Vector3
 from tf.transformations import euler_from_quaternion
-from openai_ros.task_envs.wamv import utils
+
 
 class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
@@ -26,15 +26,35 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.rospackage_name = None
         self.launch_file_name = None
 
-        self.cumulated_reward = None
-        self.previous_distance_from_des_point = None
-        self.current_position_cntr = 0
-        self.is_beyond_track = False
-        self.last_chkpt = (self.Point(np.inf, np.inf),)
+        self.propeller_high_speed = 0
+        self.propeller_low_speed = 0
+        self.max_angular_speed = 0
+        self.max_distance_from_des_point = 0
 
+        self.work_space_x_max = 0
+        self.work_space_x_min = 0
+        self.work_space_y_max = 0
+        self.work_space_y_min = 0
+
+        self.cumulated_reward = 0
+        self.done_reward = 0
+        self.closer_to_point_reward = 0
+        self.checkpoint_reward = 0
+
+        self.previous_distance_from_des_point = 0
+        self.desired_point_epsilon = 0
+        self.dec_obs = 0
+        self.current_position_cntr = 0
+        self.cumulated_steps = 0
+
+        self.last_chkpt = (self.Point(np.inf, np.inf),)
         self.desired_point = Point()
         self.midpoint = Point()
+
+        self.is_beyond_track = False
         self.passed_midpoint = False
+
+        self.buoys = []
 
         self._load_config()
 
@@ -45,45 +65,28 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
             raise FileNotFoundError('The Simulation ROS Workspace path'
                                    f'{self.ros_ws_abspath} does not exist')
 
-        ROSLauncher(rospackage_name=self.rospackage_name,
-                    launch_file_name=self.launch_file_name,
-                    ros_ws_abspath=self.ros_ws_abspath)
+        ROSLauncher(
+            rospackage_name=self.rospackage_name,
+            launch_file_name=self.launch_file_name,
+            ros_ws_abspath=self.ros_ws_abspath
+        )
 
-        env_type = rospy.get_param('/wamv/environment_type')
-        # Load Params from the desired Yaml file
-        LoadYamlFileParamsTest(rospackage_name="openai_ros",
-                               rel_path_from_package_to_file="src/openai_ros/task_envs/wamv/config",
-                               yaml_file_name=f'wamv_nav_{env_type}.yaml')
+        LoadYamlFileParamsTest(
+            rospackage_name="openai_ros",
+            rel_path_from_package_to_file="src/openai_ros/task_envs/wamv/config",
+            yaml_file_name=f'wamv_nav_{rospy.get_param("/wamv/environment_type")}.yaml'
+        )
 
         super().__init__()
 
         rospy.logdebug(f'Start {type(self).__name__} INIT...')
-        number_actions = rospy.get_param('/wamv/n_actions')
-        self.action_space = spaces.Discrete(number_actions)
-
-        # We set the reward range, which is not compulsory but here we do it.
+        self.action_space = spaces.Discrete(rospy.get_param('/wamv/n_actions'))
         self.reward_range = (-np.inf, np.inf)
-
-        # Actions and Observations
-        self.propeller_high_speed = rospy.get_param('/wamv/propeller_high_speed')
-        self.propeller_low_speed = rospy.get_param('/wamv/propeller_low_speed')
-        self.max_angular_speed = rospy.get_param('/wamv/max_angular_speed')
-        self.max_distance_from_des_point = rospy.get_param('/wamv/max_distance_from_des_point')
 
         #Get Desired Point to Get
         self._load_point('desired_point')
         self._load_point('midpoint')
-
-        self.desired_point_epsilon = rospy.get_param("/wamv/desired_point_epsilon")
-
-        self.work_space_x_max = rospy.get_param("/wamv/work_space/x_max")
-        self.work_space_x_min = rospy.get_param("/wamv/work_space/x_min")
-        self.work_space_y_max = rospy.get_param("/wamv/work_space/y_max")
-        self.work_space_y_min = rospy.get_param("/wamv/work_space/y_min")
-
-        self.dec_obs = rospy.get_param("/wamv/number_decimals_precision_obs")
-
-        self.buoys = []
+        self._load_buoys()
 
         high = np.array([
             np.ones((720, 1280, 3))*255,
@@ -94,16 +97,6 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
             np.zeros((720, 1280, 3))
         ])
         self.observation_space = spaces.Box(low, high)
-
-        rospy.logdebug(f'Action spaces type: {self.action_space}')
-        rospy.logdebug(f'Observation spaces type: {self.observation_space}')
-
-        self.done_reward =rospy.get_param("/wamv/done_reward")
-        self.closer_to_point_reward = rospy.get_param("/wamv/closer_to_point_reward")
-        self.checkpoint_reward = rospy.get_param('/wamv/checkpoint_reward')
-
-        self.cumulated_steps = 0.0
-        self._load_buoys()
 
         rospy.logdebug(f'END {type(self).__name__} INIT...')
 
@@ -124,6 +117,23 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.ros_ws_abspath = os.path.expandvars(rospy.get_param('/wamv/ros_ws_abspath', None))
         self.rospackage_name = rospy.get_param('/wamv/rospackage_name', None)
         self.launch_file_name = rospy.get_param('/wamv/launch_file_name', None)
+
+        self.propeller_high_speed = rospy.get_param('/wamv/propeller_high_speed')
+        self.propeller_low_speed = rospy.get_param('/wamv/propeller_low_speed')
+        self.max_angular_speed = rospy.get_param('/wamv/max_angular_speed')
+        self.max_distance_from_des_point = rospy.get_param('/wamv/max_distance_from_des_point')
+
+        self.work_space_x_max = rospy.get_param("/wamv/work_space/x_max")
+        self.work_space_x_min = rospy.get_param("/wamv/work_space/x_min")
+        self.work_space_y_max = rospy.get_param("/wamv/work_space/y_max")
+        self.work_space_y_min = rospy.get_param("/wamv/work_space/y_min")
+
+        self.desired_point_epsilon = rospy.get_param("/wamv/desired_point_epsilon")
+        self.dec_obs = rospy.get_param("/wamv/number_decimals_precision_obs")
+
+        self.done_reward =rospy.get_param("/wamv/done_reward")
+        self.closer_to_point_reward = rospy.get_param("/wamv/closer_to_point_reward")
+        self.checkpoint_reward = rospy.get_param('/wamv/checkpoint_reward')
 
 
     def _load_point(self, name):
@@ -167,28 +177,28 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         right_propeller_speed = 0.0
         left_propeller_speed = 0.0
 
-        if action == Actions.FORWARD.value: # Go Forwards
+        if action == utils.Actions.FORWARD.value: # Go Forwards
             right_propeller_speed = self.propeller_high_speed
             left_propeller_speed = self.propeller_high_speed
-        elif action == Actions.BACKWARD.value: # Go BackWards
+        elif action == utils.Actions.BACKWARD.value: # Go BackWards
             right_propeller_speed = -1*self.propeller_high_speed
             left_propeller_speed = -1*self.propeller_high_speed
-        elif action == Actions.LEFT.value: # Turn Left
+        elif action == utils.Actions.LEFT.value: # Turn Left
             right_propeller_speed = self.propeller_high_speed
             left_propeller_speed = -1*self.propeller_high_speed
-        elif action == Actions.RIGHT.value: # Turn Right
+        elif action == utils.Actions.RIGHT.value: # Turn Right
             right_propeller_speed = -1*self.propeller_high_speed
             left_propeller_speed = self.propeller_high_speed
-        elif action == Actions.RIGHT45.value:
+        elif action == utils.Actions.RIGHT45.value:
             right_propeller_speed = -0.5*self.propeller_high_speed
             left_propeller_speed = 0.5*self.propeller_high_speed
-        elif action == Actions.LEFT45.value:
+        elif action == utils.Actions.LEFT45.value:
             right_propeller_speed = 0.5*self.propeller_high_speed
             left_propeller_speed = -0.5*self.propeller_high_speed
-        elif action == Actions.LEFT30.value:
+        elif action == utils.Actions.LEFT30.value:
             right_propeller_speed = 0.3*self.propeller_high_speed
             left_propeller_speed = -0.3*self.propeller_high_speed
-        elif action == Actions.RIGHT30.value:
+        elif action == utils.Actions.RIGHT30.value:
             right_propeller_speed = -0.3*self.propeller_high_speed
             left_propeller_speed = 0.3*self.propeller_high_speed
         else:
