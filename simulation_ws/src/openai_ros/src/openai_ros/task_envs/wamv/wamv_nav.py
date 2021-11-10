@@ -2,7 +2,7 @@ from collections import namedtuple
 import os
 
 import cv2
-import numpy
+import numpy as np
 
 # pylint: disable=import-error
 import rospy
@@ -15,7 +15,7 @@ from openai_ros.task_envs.wamv.utils import Actions
 from geometry_msgs.msg import Point
 from geometry_msgs.msg import Vector3
 from tf.transformations import euler_from_quaternion
-import openai_ros.task_envs.wamv.utils as utils
+from openai_ros.task_envs.wamv import utils
 
 class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
@@ -30,7 +30,11 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.previous_distance_from_des_point = None
         self.current_position_cntr = 0
         self.is_beyond_track = False
-        self.last_chkpt = (self.Point(numpy.inf, numpy.inf),)
+        self.last_chkpt = (self.Point(np.inf, np.inf),)
+
+        self.desired_point = Point()
+        self.midpoint = Point()
+        self.passed_midpoint = False
 
         self._load_config()
 
@@ -58,7 +62,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.action_space = spaces.Discrete(number_actions)
 
         # We set the reward range, which is not compulsory but here we do it.
-        self.reward_range = (-numpy.inf, numpy.inf)
+        self.reward_range = (-np.inf, np.inf)
 
         # Actions and Observations
         self.propeller_high_speed = rospy.get_param('/wamv/propeller_high_speed')
@@ -67,11 +71,9 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.max_distance_from_des_point = rospy.get_param('/wamv/max_distance_from_des_point')
 
         #Get Desired Point to Get
-        self.desired_point = Point()
-        self.desired_point.x = rospy.get_param("/wamv/desired_point/x")
-        self.desired_point.y = rospy.get_param("/wamv/desired_point/y")
-        self.desired_point.z = rospy.get_param("/wamv/desired_point/z")
-        self.desired_position = None
+        self._load_point('desired_point')
+        self._load_point('midpoint')
+
         self.desired_point_epsilon = rospy.get_param("/wamv/desired_point_epsilon")
 
         self.work_space_x_max = rospy.get_param("/wamv/work_space/x_max")
@@ -83,39 +85,14 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
         self.buoys = []
 
-        # high = numpy.array([
-        #     self.work_space_x_max,
-        #     self.work_space_y_max,
-        #     1.57,
-        #     1.57,
-        #     3.14,
-        #     self.propeller_high_speed,
-        #     self.propeller_high_speed,
-        #     self.max_angular_speed,
-        #     self.max_distance_from_des_point
-        # ])
-        high = numpy.array([
-            numpy.ones((720, 1280, 3))*255,
-            numpy.ones((720, 1280, 3))*255
+        high = np.array([
+            np.ones((720, 1280, 3))*255,
+            np.ones((720, 1280, 3))*255
         ])
-
-        low = numpy.array([
-            numpy.zeros((720, 1280, 3)),
-            numpy.zeros((720, 1280, 3))
+        low = np.array([
+            np.zeros((720, 1280, 3)),
+            np.zeros((720, 1280, 3))
         ])
-
-        # low = numpy.array([
-        #     self.work_space_x_min,
-        #     self.work_space_y_min,
-        #     -1*1.57,
-        #     -1*1.57,
-        #     -1*3.14,
-        #     -1*self.propeller_high_speed,
-        #     -1*self.propeller_high_speed,
-        #     -1*self.max_angular_speed,
-        #     0.0
-        # ])
-
         self.observation_space = spaces.Box(low, high)
 
         rospy.logdebug(f'Action spaces type: {self.action_space}')
@@ -126,12 +103,12 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.checkpoint_reward = rospy.get_param('/wamv/checkpoint_reward')
 
         self.cumulated_steps = 0.0
-        self._load_buoys(set_desired_pos=True)
+        self._load_buoys()
 
         rospy.logdebug(f'END {type(self).__name__} INIT...')
 
 
-    def _load_buoys(self, set_desired_pos=False):
+    def _load_buoys(self):
         n = int(rospy.get_param('/buoys/n'))
         for i in range(n):
             x_red = rospy.get_param(f'/buoys/red_{n-i}/x')
@@ -141,14 +118,18 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
             red = self.Point(x_red, y_red)
             green = self.Point(x_green, y_green)
             self.buoys.append((green, red))
-            if i == 0 and set_desired_pos:
-                self.desired_position = (green, red)
 
 
     def _load_config(self):
         self.ros_ws_abspath = os.path.expandvars(rospy.get_param('/wamv/ros_ws_abspath', None))
         self.rospackage_name = rospy.get_param('/wamv/rospackage_name', None)
         self.launch_file_name = rospy.get_param('/wamv/launch_file_name', None)
+
+
+    def _load_point(self, name):
+        getattr(self, name).x = rospy.get_param(f'/wamv/{name}/x')
+        getattr(self, name).y = rospy.get_param(f'/wamv/{name}/y')
+        getattr(self, name).z = rospy.get_param(f'/wamv/{name}/z')
 
 
     def _set_init_pose(self):
@@ -224,58 +205,31 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
     def _get_obs(self):
         rospy.logdebug('Start Get Observation')
 
+        def _set_mask(color):
+            lower, upper = color
+            lower = np.array(lower, dtype=np.uint8)
+            upper = np.array(upper, dtype=np.uint8)
+            return cv2.inRange(image, lower, upper)
+
         odom = self.odom()
         image_right = self.image_right()
         image_left = self.image_left()
-        # image_front = self.image_front()
-        # cv2.imshow('front', image_front)
-        # cv2.waitKey(0)
+
         base_position = odom.pose.pose.position
-        # base_orientation_quat = odom.pose.pose.orientation
-        # base_roll, base_pitch, base_yaw = self.get_orientation_euler(base_orientation_quat)
-        # base_speed_linear = odom.twist.twist.linear
-        # base_speed_angular_yaw = odom.twist.twist.angular.z
-
-        # distance_from_desired_point = self.get_distance_from_desired_point(base_position)
-
         observation = []
         observation.append(round(base_position.x, self.dec_obs))
         observation.append(round(base_position.y, self.dec_obs))
 
-        # observation.append(round(base_roll, self.dec_obs))
-        # observation.append(round(base_pitch, self.dec_obs))
-        # observation.append(round(base_yaw, self.dec_obs))
+        image_right = image_right[:int(np.floor(image_right.shape[0]*2/3)), ...]
+        image_left = image_right[:int(np.floor(image_left.shape[0]*2/3)), ...]
 
-        # observation.append(round(base_speed_linear.x, self.dec_obs))
-        # observation.append(round(base_speed_linear.y, self.dec_obs))
-
-        # observation.append(round(base_speed_angular_yaw, self.dec_obs))
-
-        # observation.append(round(distance_from_desired_point, self.dec_obs))
-
-        # image_right = cv2.cvtColor(image_right, cv2.COLOR_BGR2GRAY)
-        image_right = image_right[:int(numpy.floor(image_right.shape[0]*2/3)), ...]
-        # image_right = cv2.resize(image_right, (84, 84), interpolation=cv2.INTER_AREA)
-
-        # image_left = cv2.cvtColor(image_left, cv2.COLOR_BGR2GRAY)
-        image_left = image_right[:int(numpy.floor(image_left.shape[0]*2/3)), ...]
-        # image_left = cv2.resize(image_left, (84, 84), interpolation=cv2.INTER_AREA)
-
-        image = numpy.concatenate((
+        image = np.concatenate((
             image_left[:, :image_left.shape[1]//2],
             image_right[:, image_right.shape[1]//2:]
         ), axis=1)
 
-        # image = numpy.array(image, dtype=numpy.float32).reshape(1, 84, 84)
-        lower, upper = utils.ColorBoundaries.GREEN
-        lower = numpy.array(lower, dtype=numpy.uint8)
-        upper = numpy.array(upper, dtype=numpy.uint8)
-        mask_green = cv2.inRange(image, lower, upper)
-
-        lower, upper = utils.ColorBoundaries.RED
-        lower = numpy.array(lower, dtype=numpy.uint8)
-        upper = numpy.array(upper, dtype=numpy.uint8)
-        mask_red = cv2.inRange(image, lower, upper)
+        mask_green = _set_mask(utils.ColorBoundaries.GREEN)
+        mask_red = _set_mask(utils.ColorBoundaries.RED)
 
         image_red = cv2.bitwise_and(image, image, mask=mask_red)
         image_green = cv2.bitwise_and(image, image, mask=mask_green)
@@ -283,7 +237,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         image = image_red + image_green
         image = cv2.resize(image, (60, 80), interpolation=cv2.INTER_AREA)
 
-        image = numpy.array(image, dtype=numpy.int8).reshape(3, image.shape[0], image.shape[1])
+        image = np.array(image, dtype=np.int8).reshape(3, image.shape[0], image.shape[1])
         image = cv2.normalize(image, None, 0, 1, cv2.NORM_MINMAX, dtype=cv2.CV_32F)
 
         observation.append(image)
@@ -291,21 +245,21 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         return image
 
 
-    def _is_done(self, observations):
+    def _is_done(self, _):
 
         current_position = Vector3()
-        # current_position.x = observations[0]
-        # current_position.y = observations[1]
         current_position.x, current_position.y = self._get_current_pos()
 
         is_inside_corridor = self.is_inside_workspace(current_position)
         has_reached_des_point = self.is_in_desired_position(current_position)
 
-        done = not(is_inside_corridor) or has_reached_des_point or not self.is_in_track()
+        done = not(is_inside_corridor) or\
+               (has_reached_des_point and self.passed_midpoint) or\
+               not self.is_in_track()
         if done:
             self._load_buoys()
             self.is_beyond_track = False
-            self.last_chkpt = (self.Point(numpy.inf, numpy.inf),)
+            self.last_chkpt = (self.Point(np.inf, np.inf),)
 
         return done
 
@@ -319,10 +273,8 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         return True
 
 
-    def _compute_reward(self, observations, done):
+    def _compute_reward(self, _, done):
         current_position = Point()
-        # current_position.x = observations[0]
-        # current_position.y = observations[1]
         current_position.x, current_position.y = self._get_current_pos()
 
         distance_from_des_point = self.get_distance_from_desired_point(current_position)
@@ -356,7 +308,10 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
         else:
             if self.is_in_desired_position(current_position):
-                reward = self.done_reward
+                if self.passed_midpoint:
+                    reward = self.done_reward
+                else:
+                    self.passed_midpoint = True
             else:
                 reward = -self.done_reward
 
@@ -374,35 +329,23 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
     def is_in_desired_position(self, current_position):
         is_in_desired_pos = False
 
-        # x_pos_plus = self.desired_point.x + epsilon
-        # x_pos_minus = self.desired_point.x - epsilon
-        # y_pos_plus = self.desired_point.y + epsilon
-        # y_pos_minus = self.desired_point.y - epsilon
-
         x_current = current_position.x
         y_current = current_position.y
-        green, red = self.desired_position
-        if green.x >= x_current\
-            and green.y <= y_current <= red.y:
+
+        if self.passed_midpoint:
+            desired_position = self.desired_point
+        else:
+            desired_position = self.midpoint
+
+        if desired_position.x >= x_current\
+            and desired_position.y <= y_current <= desired_position.y:
             rospy.loginfo('='*60)
             rospy.loginfo(f'DESIRED POSITION at x:{x_current} y:{y_current}')
             rospy.loginfo('='*60)
             is_in_desired_pos = True
 
-        # x_pos_are_close = x_pos_minus < x_current <= x_pos_plus
-        # y_pos_are_close = y_pos_minus < y_current <= y_pos_plus
-        # is_in_desired_pos = x_pos_are_close and y_pos_are_close
-
-        # rospy.logdebug('#'*20)
-        # rospy.logdebug(f'current_position:\n{current_position}')
-        # rospy.logdebug(f'x_pos_plus: {x_pos_plus}, x_pos_minus: {x_pos_minus}')
-        # rospy.logdebug(f'y_pos_plus: {y_pos_plus}, y_pos_minus: {y_pos_minus}')
-        # rospy.logdebug(f'x_pos_are_close: {x_pos_are_close}')
-        # rospy.logdebug(f'x_pos_are_close: {y_pos_are_close}')
-        # rospy.logdebug(f'is_in_desired_pos {is_in_desired_pos}')
-        # rospy.logdebug('#'*20)
-
         return is_in_desired_pos
+
 
     def _get_current_pos(self):
         odom = self.odom()
@@ -413,19 +356,23 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
 
     def get_distance_from_desired_point(self, current_position):
+        if self.passed_midpoint:
+            desired_position = self.desired_point
+        else:
+            desired_position = self.midpoint
+
         distance = self.get_distance_from_point(
             current_position,
-            self.desired_point
+            desired_position
         )
 
         return distance
 
 
     def get_distance_from_point(self, pstart, p_end):
-        a = numpy.array((pstart.x, pstart.y, pstart.z))
-        b = numpy.array((p_end.x, p_end.y, p_end.z))
-
-        distance = numpy.linalg.norm(a - b)
+        a = np.array((pstart.x, pstart.y, pstart.z))
+        b = np.array((p_end.x, p_end.y, p_end.z))
+        distance = np.linalg.norm(a - b)
 
         return distance
 
@@ -450,10 +397,6 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
             rospy.loginfo(f'Current position: {current_position_str}')
             self.current_position_cntr = 0
         self.current_position_cntr += 1
-        # rospy.loginfo(f'work_space_x_max: {self.work_space_x_max}, '
-        #               f'work_space_x_min: {self.work_space_x_min}')
-        # rospy.loginfo(f'work_space_y_max: {self.work_space_y_max}, '
-        #               f'work_space_y_min: {self.work_space_y_min}')
 
         if current_position.x > self.work_space_x_min and\
             current_position.x <= self.work_space_x_max:

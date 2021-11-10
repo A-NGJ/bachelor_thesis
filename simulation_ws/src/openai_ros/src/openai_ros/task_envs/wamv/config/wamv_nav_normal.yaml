@@ -15,6 +15,12 @@ wamv: #namespace
       x: 18.0
       y: 53
       z: 1.0
+
+    midpoint:
+      x: 67
+      y: 79
+      z: 1.0
+
     desired_point_epsilon: 0.5
     max_distance_from_des_point: 105.0 # Maximum distance regitered in observations, has to be bigger than the largest distance of the workspace.
     
