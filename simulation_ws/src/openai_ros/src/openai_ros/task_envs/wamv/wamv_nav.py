@@ -259,6 +259,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         if done:
             self._load_buoys()
             self.is_beyond_track = False
+            self.passed_midpoint = False
             self.last_chkpt = (self.Point(np.inf, np.inf),)
 
         return done
@@ -311,7 +312,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
                 if self.passed_midpoint:
                     reward = self.done_reward
                 else:
-                    self.passed_midpoint = True
+                    reward = self.closer_to_point_reward
             else:
                 reward = -self.done_reward
 
@@ -337,11 +338,12 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         else:
             desired_position = self.midpoint
 
-        if desired_position.x >= x_current\
-            and desired_position.y <= y_current <= desired_position.y:
+        if desired_position.x + self.desired_point_epsilon>= x_current >= desired_position.x - self.desired_point_epsilon\
+            and desired_position.y - 9 <= y_current <= desired_position.y + 9:
             rospy.loginfo('='*60)
             rospy.loginfo(f'DESIRED POSITION at x:{x_current} y:{y_current}')
             rospy.loginfo('='*60)
+            self.passed_midpoint = True
             is_in_desired_pos = True
 
         return is_in_desired_pos
