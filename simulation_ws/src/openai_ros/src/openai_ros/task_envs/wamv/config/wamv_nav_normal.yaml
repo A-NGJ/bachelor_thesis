@@ -12,13 +12,8 @@ wamv: #namespace
       y_min: 34.0
 
     desired_point:
-      x: 18.0
-      y: 53
-      z: 1.0
-
-    midpoint:
-      x: 67
-      y: 79
+      x: 33.0
+      y: 66.0
       z: 1.0
 
     desired_point_epsilon: 0.5
@@ -28,4 +23,4 @@ wamv: #namespace
 
     done_reward: 500.0 # reward
     closer_to_point_reward: 10.0 # reward
-    checkpoint_reward: 25.0 # reward
+    checkpoint_reward: 50.0 # reward

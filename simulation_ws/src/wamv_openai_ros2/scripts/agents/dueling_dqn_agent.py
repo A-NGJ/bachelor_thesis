@@ -35,9 +35,13 @@ class DuelingDQNAgent(BaseAgent):
 
         q_next[dones] = 0.0
         q_target = rewards + self.gamma*q_next
+        self.q_history.append(q_pred.cpu().detach().numpy())
 
         loss = self.q_eval.loss(q_target, q_pred).to(self.q_eval.device)
+        self.loss_history.append(loss.cpu().detach().numpy())
         loss.backward()
+        for param in self.q_eval.parameters():
+            param.grad.data.clamp_(-1, 1)
         self.q_eval.optimizer.step()
         self.learn_step_counter += 1
 
@@ -70,7 +74,7 @@ class DuelingDDQNAgent(DuelingDQNAgent):
 
         q_next[dones] = 0.0
         q_target = rewards + self.gamma*q_next[indices, max_actions]
-        self.q_history.append(q_target.cpu().detach().numpy())
+        self.q_history.append(q_pred.cpu().detach().numpy())
 
         loss = self.q_eval.loss(q_target, q_pred).to(self.q_eval.device)
         loss.backward()

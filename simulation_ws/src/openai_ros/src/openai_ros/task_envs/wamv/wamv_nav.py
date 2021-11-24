@@ -29,7 +29,6 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.propeller_high_speed = 0
         self.propeller_low_speed = 0
         self.max_angular_speed = 0
-        self.max_distance_from_des_point = 0
 
         self.work_space_x_max = 0
         self.work_space_x_min = 0
@@ -41,7 +40,6 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.closer_to_point_reward = 0
         self.checkpoint_reward = 0
 
-        self.previous_distance_from_des_point = 0
         self.desired_point_epsilon = 0
         self.dec_obs = 0
         self.current_position_cntr = 0
@@ -49,10 +47,8 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
         self.last_chkpt = (self.Point(np.inf, np.inf),)
         self.desired_point = Point()
-        self.midpoint = Point()
 
         self.is_beyond_track = False
-        self.passed_midpoint = False
 
         self.buoys = []
 
@@ -86,7 +82,6 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
         #Get Desired Point to Get
         self._load_point('desired_point')
-        self._load_point('midpoint')
         self._load_buoys()
 
         high = np.array([
@@ -124,7 +119,6 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.propeller_high_speed = rospy.get_param('/wamv/propeller_high_speed')
         self.propeller_low_speed = rospy.get_param('/wamv/propeller_low_speed')
         self.max_angular_speed = rospy.get_param('/wamv/max_angular_speed')
-        self.max_distance_from_des_point = rospy.get_param('/wamv/max_distance_from_des_point')
 
         self.work_space_x_max = rospy.get_param("/wamv/work_space/x_max")
         self.work_space_x_min = rospy.get_param("/wamv/work_space/x_min")
@@ -132,7 +126,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.work_space_y_min = rospy.get_param("/wamv/work_space/y_min")
 
         self.desired_point_epsilon = rospy.get_param("/wamv/desired_point_epsilon")
-        self.done_reward =rospy.get_param("/wamv/done_reward")
+        self.done_reward = rospy.get_param("/wamv/done_reward")
         self.closer_to_point_reward = rospy.get_param("/wamv/closer_to_point_reward")
         self.checkpoint_reward = rospy.get_param('/wamv/checkpoint_reward')
 
@@ -163,8 +157,6 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         current_position = Vector3()
         current_position.x = odom.pose.pose.position.x
         current_position.y = odom.pose.pose.position.y
-        self.previous_distance_from_des_point =\
-            self.get_distance_from_desired_point(current_position)
 
 
     def _set_action(self, action):
@@ -263,18 +255,15 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         current_position.x, current_position.y = self._get_current_pos()
 
         is_inside_corridor = self.is_inside_workspace(current_position)
-        has_reached_des_point, passed_midpoint =\
-            self.is_in_desired_position(current_position, change_flag=True)
+        has_reached_des_point = self.is_in_desired_position(current_position)
 
-        done = not(is_inside_corridor) or\
-               (has_reached_des_point and self.passed_midpoint) or\
+        done = not is_inside_corridor or\
+               has_reached_des_point or\
                not self.is_in_track()
-        if passed_midpoint:
-            self.passed_midpoint = True
+
         if done:
             self._load_buoys()
             self.is_beyond_track = False
-            self.passed_midpoint = False
             self.last_chkpt = (self.Point(np.inf, np.inf),)
 
         return done
@@ -292,20 +281,9 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
     def _compute_reward(self, _, done):
         current_position = Point()
         current_position.x, current_position.y = self._get_current_pos()
-
-        distance_from_des_point = self.get_distance_from_desired_point(current_position)
-        distance_difference = distance_from_des_point - self.previous_distance_from_des_point
+        reward = 0
 
         if not done:
-            # If there has been a decrease in the distance to the desired point, we reward it
-            if distance_difference < 0.0:
-                reward = self.closer_to_point_reward
-            else:
-                reward = -self.closer_to_point_reward
-
-            # If the boat crossed a checkpoint within buoys reward it
-            # If the boat crossed a checkpoint beyond give it negative reward
-            # Pop checkpoint from the stack anyway
             try:
                 chkpt_green, chkpt_red = self.buoys[-1]
                 if chkpt_green.x - self.desired_point_epsilon <=\
@@ -324,14 +302,12 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
         else:
             if self.is_in_desired_position(current_position):
-                if self.passed_midpoint:
-                    reward = self.done_reward
-                else:
-                    reward = self.closer_to_point_reward
+                reward = self.done_reward
+                rospy.loginfo('='*60)
+                rospy.loginfo(f'DESIRED POSITION x: {current_position.x} y: {current_position.y}')
+                rospy.loginfo('='*60)
             else:
                 reward = -self.done_reward
-
-        self.previous_distance_from_des_point = distance_from_des_point
 
         rospy.logdebug(f'reward={reward}')
         self.cumulated_reward += reward
@@ -342,30 +318,18 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         return reward
 
 
-    def is_in_desired_position(self, current_position, change_flag=False):
+    def is_in_desired_position(self, current_position):
         is_in_desired_pos = False
-        passed_midpoint = False
 
         x_current = current_position.x
         y_current = current_position.y
 
-        if self.passed_midpoint:
-            desired_position = self.desired_point
-        else:
-            desired_position = self.midpoint
-
-
-        if desired_position.x + self.desired_point_epsilon>= x_current >=\
-            desired_position.x - self.desired_point_epsilon\
-            and desired_position.y - 9 <= y_current <= desired_position.y + 9:
-            if change_flag:
-                rospy.loginfo('='*60)
-                rospy.loginfo(f'DESIRED POSITION at x:{x_current} y:{y_current}')
-                rospy.loginfo('='*60)
-                passed_midpoint = True
+        if self.desired_point.x + self.desired_point_epsilon>= x_current >=\
+            self.desired_point.x - self.desired_point_epsilon\
+            and self.desired_point.y - 9 <= y_current <= self.desired_point.y + 9:
             is_in_desired_pos = True
 
-        return is_in_desired_pos, passed_midpoint
+        return is_in_desired_pos
 
 
     def _get_current_pos(self):
@@ -377,14 +341,10 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
 
     def get_distance_from_desired_point(self, current_position):
-        if self.passed_midpoint:
-            desired_position = self.desired_point
-        else:
-            desired_position = self.midpoint
 
         distance = self.get_distance_from_point(
             current_position,
-            desired_position
+            self.desired_point
         )
 
         return distance
