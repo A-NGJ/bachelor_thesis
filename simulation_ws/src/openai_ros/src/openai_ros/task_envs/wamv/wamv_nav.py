@@ -239,7 +239,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         image_green = cv2.bitwise_and(image, image, mask=mask_green)
 
         image = image_red + image_green
-        image = cv2.resize(image, (60, 80), interpolation=cv2.INTER_AREA)
+        image = cv2.resize(image, (64, 80), interpolation=cv2.INTER_AREA)
 
         image = np.array(image, dtype=np.int8).reshape(3, image.shape[0], image.shape[1])
         image = cv2.normalize(image, None, 0, 1, cv2.NORM_MINMAX, dtype=cv2.CV_32F)

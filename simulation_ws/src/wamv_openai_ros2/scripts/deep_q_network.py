@@ -1,4 +1,5 @@
 import os
+import sys
 
 import numpy as np
 import torch as T
@@ -13,12 +14,12 @@ class DeepQNetworkBase(nn.Module):
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name)
 
-        self.conv1 = nn.Conv2d(input_dims[0], 32, 3, stride=1)
-        self.max_pool1 = nn.MaxPool2d(2, stride=1)
-        self.conv2 = nn.Conv2d(32, 64, 3, stride=1)
-        self.max_pool2 = nn.MaxPool2d(2, stride=1)
-        self.conv3 = nn.Conv2d(64, 64, 3, stride=1)
-        self.max_pool3 = nn.MaxPool2d(2, stride=1)
+        self.conv1 = nn.Conv2d(input_dims[0], 32, 3, stride=1, padding=1)
+        self.max_pool1 = nn.MaxPool2d(2, stride=2)
+        self.conv2 = nn.Conv2d(32, 64, 3, stride=1, padding=1)
+        self.max_pool2 = nn.MaxPool2d(2, stride=2)
+        self.conv3 = nn.Conv2d(64, 64, 3, stride=1, padding=1)
+        self.max_pool3 = nn.MaxPool2d(2, stride=2)
 
     def calculate_conv_output_dims(self, input_dims):
         state = T.zeros(1, *input_dims)
@@ -49,8 +50,8 @@ class DeepQNetwork(DeepQNetworkBase):
         super().__init__(name, input_dims, chkpt_dir)
         fc_input_dims = self.calculate_conv_output_dims(input_dims)
 
-        self.fc1 = nn.Linear(fc_input_dims, 128)
-        self.fc2 = nn.Linear(128, n_actions)
+        self.fc1 = nn.Linear(fc_input_dims, 256)
+        self.fc2 = nn.Linear(256, n_actions)
 
         self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
         self.loss = nn.MSELoss()

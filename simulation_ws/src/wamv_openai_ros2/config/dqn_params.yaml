@@ -11,7 +11,7 @@ wamv: #namespace
   max_steps: 1000
   algorithm: "ddqn"
   lr: 0.00001
-  mem_size: 10000
+  mem_size: 40000
   eps_min: 0.01
   batch_size: 32
   replace: 1000

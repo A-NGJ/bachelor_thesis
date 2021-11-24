@@ -180,7 +180,7 @@ class StackFrames(gym.ObservationWrapper):
         return np.array(self.stack).reshape(self.observation_space.low.shape)
 
 
-def make_env(env_name, shape=(60, 80, 3), repeat=5, clip_rewards=False,
+def make_env(env_name, shape=(64, 80, 3), repeat=5, clip_rewards=False,
              no_ops=0, fire_first=False):
     #env = gym.make(env_name)
     env = StartOpenAI_ROS_Environment(env_name)
