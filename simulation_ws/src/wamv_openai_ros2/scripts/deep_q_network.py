@@ -78,9 +78,9 @@ class DuelingDeepQNetwork(DeepQNetworkBase):
         super().__init__(name, input_dims, chkpt_dir)
         fc_input_dims = self.calculate_conv_output_dims(input_dims)
 
-        self.fc1 = nn.Linear(fc_input_dims, 96)
-        self.V = nn.Linear(96, 1)
-        self.A = nn.Linear(96, n_actions)
+        self.fc1 = nn.Linear(fc_input_dims, 256)
+        self.V = nn.Linear(256, 1)
+        self.A = nn.Linear(256, n_actions)
 
         self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
         self.loss = nn.MSELoss()
