@@ -22,6 +22,7 @@ class DQNAgent(BaseAgent):
         q_target = rewards + self.gamma*q_next
 
         loss = self.q_eval.loss(q_target, q_pred).to(self.q_eval.device)
+        self.loss_history.append(loss.detach().numpy())
         loss.backward()
         self.q_eval.optimizer.step()
         self.learn_step_counter += 1

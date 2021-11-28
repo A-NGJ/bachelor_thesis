@@ -1,12 +1,28 @@
 import collections
+import functools
 import os
+import yaml
 
 import cv2
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_learning_curve(x, scores, epsilons, filename):
+from enums import Dir
+
+
+def make_dir(path):
+    def decorator_make_dir(func):
+        @functools.wraps(func)
+        def wrapper_make_dir(*args, **kwargs):
+            if not os.path.exists(path):
+                os.makedirs(path)
+            func(*args, **kwargs)
+        return wrapper_make_dir
+    return decorator_make_dir
+
+@make_dir(Dir.PLOT.value)
+def plot_learning_curve(x, scores, epsilons, filename, extension='.png'):
     fig = plt.figure()
     ax = fig.add_subplot(111, label='1')
     ax2 = fig.add_subplot(111, label='2', frame_on=False)
@@ -29,10 +45,30 @@ def plot_learning_curve(x, scores, epsilons, filename):
     ax2.yaxis.set_label_position('right')
     ax2.tick_params(axis='y', colors='C1')
 
-    dirname = os.path.dirname(filename)
-    if not os.path.exists(dirname):
-        os.mkdir(dirname)
-    plt.savefig(filename)
+    dir_ = f'{Dir.PLOT.value}{filename}{extension}'
+    plt.savefig(dir_)
+
+
+@make_dir(Dir.PLOT.value)
+def plot_loss_history(loss, filename, *, extension='.png'):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.scatter(np.arange(len(loss)), loss, s=5)
+
+    ax.set_xlabel('Epochs', color='C0')
+    ax.set_ylabel('Loss', color='C0')
+    ax.tick_params(axis='x', colors='C0')
+    ax.tick_params(axis='y', colors='C0')
+
+    dir_ = f'{Dir.PLOT.value}{filename}_loss{extension}'
+    plt.savefig(dir_)
+
+
+@make_dir(Dir.PARAMS.value)
+def save_parameters(parameters, filename, *, extension='.yaml'):
+    dir_ = f'{Dir.PARAMS.value}{filename}{extension}'
+    with open(dir_, 'w', encoding='utf-8') as yml:
+        yaml.dump(parameters, yml)
 
 
 class RepeatActionAndMaxFrame(gym.Wrapper):
@@ -58,7 +94,7 @@ class RepeatActionAndMaxFrame(gym.Wrapper):
             self.frame_buffer[idx] = obs
             if done:
                 break
-        
+
         max_frame = np.maximum(self.frame_buffer[0], self.frame_buffer[1])
         return max_frame, t_reward, done, info
 
@@ -111,7 +147,7 @@ class StackFrames(gym.ObservationWrapper):
         obs = self.env.reset()
         for _ in range(self.stack.maxlen):
             self.stack.append(obs)
-
+        
         return np.array(self.stack).reshape(self.observation_space.low.shape)
 
     def observation(self, obs):

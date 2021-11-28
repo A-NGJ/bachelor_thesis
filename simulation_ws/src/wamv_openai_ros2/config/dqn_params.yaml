@@ -1,0 +1,316 @@
+wamv: #namespace
+  task_and_robot_environment_name: 'WamvNavTwoSetsBuoys-v0'
+  ros_ws_abspath: "${SIMULATION_DIR}/bachelor_thesis/simulation_ws/"
+  environment_type: "normal"
+  rospackage_name: "vrx_gazebo"
+  launch_file_name: "vrx.launch"
+  #dqn params
+  gamma: 0.99
+  epsilon: 1.0
+  n_games: 700
+  max_steps: 1000
+  algorithm: "dueling-dqn"
+  lr: 0.00001
+  mem_size: 12000
+  eps_min: 0.01
+  batch_size: 32
+  replace: 1000
+  eps_dec: 0.00005
+  load_checkpoint: false
+
+buoys:
+  n: 49
+  red_49:
+    x: 18
+    y: 62
+  red_48:
+    x: 19
+    y: 63
+  red_47:
+    x: 20
+    y: 64
+  red_46:
+    x: 23
+    y: 65
+  red_45:
+    x: 24
+    y: 66
+  red_44:
+    x: 26
+    y: 67
+  red_43:
+    x: 28
+    y: 68
+  red_42:
+    x: 29
+    y: 69
+  red_41:
+    x: 31
+    y: 70
+  red_40:
+    x: 33
+    y: 71
+  red_39:
+    x: 34
+    y: 72
+  red_38:
+    x: 36
+    y: 73
+  red_37:
+    x: 38
+    y: 74
+  red_36:
+    x: 39
+    y: 75
+  red_35:
+    x: 41
+    y: 76
+  red_34:
+    x: 43
+    y: 77
+  red_33:
+    x: 44
+    y: 78
+  red_32:
+    x: 46
+    y: 79
+  red_31:
+    x: 48
+    y: 80
+  red_30:
+    x: 49
+    y: 81
+  red_29:
+    x: 51
+    y: 82
+  red_28:
+    x: 53
+    y: 83
+  red_27:
+    x: 55
+    y: 84
+  red_26:
+    x: 56
+    y: 85
+  red_25:
+    x: 58
+    y: 86
+  red_24:
+    x: 59
+    y: 86
+  red_23:
+    x: 61
+    y: 87
+  red_22:
+    x: 63
+    y: 87
+  red_21:
+    x: 65
+    y: 87
+  red_20:
+    x: 67
+    y: 88
+  red_19:
+    x: 68
+    y: 88
+  red_18:
+    x: 70
+    y: 88
+  red_17:
+    x: 72
+    y: 87
+  red_16:
+    x: 73
+    y: 87
+  red_15:
+    x: 74
+    y: 87
+  red_14:
+    x: 76
+    y: 86
+  red_13:
+    x: 78
+    y: 86
+  red_12:
+    x: 80
+    y: 85
+  red_11:
+    x: 82
+    y: 84
+  red_10:
+    x: 83
+    y: 83
+  red_9:
+    x: 84
+    y: 82
+  red_8:
+    x: 86
+    y: 81
+  red_7:
+    x: 88
+    y: 80
+  red_6:
+    x: 89
+    y: 79
+  red_5:
+    x: 91
+    y: 78
+  red_4:
+    x: 93
+    y: 77
+  red_3:
+    x: 94
+    y: 76
+  red_2:
+    x: 96
+    y: 75
+  red_1:
+    x: 98
+    y: 74
+  green_49:
+    x: 18
+    y: 44
+  green_48:
+    x: 19
+    y: 45
+  green_47:
+    x: 20
+    y: 46
+  green_46:
+    x: 23
+    y: 47
+  green_45:
+    x: 24
+    y: 48
+  green_44:
+    x: 26
+    y: 49
+  green_43:
+    x: 28
+    y: 50
+  green_42:
+    x: 29
+    y: 51
+  green_41:
+    x: 31
+    y: 52
+  green_40:
+    x: 33
+    y: 53
+  green_39:
+    x: 34
+    y: 54
+  green_38:
+    x: 36
+    y: 55
+  green_37:
+    x: 38
+    y: 56
+  green_36:
+    x: 39
+    y: 57
+  green_35:
+    x: 41
+    y: 58
+  green_34:
+    x: 43
+    y: 59
+  green_33:
+    x: 44
+    y: 60
+  green_32:
+    x: 46
+    y: 61
+  green_31:
+    x: 48
+    y: 62
+  green_30:
+    x: 49
+    y: 63
+  green_29:
+    x: 51
+    y: 64
+  green_28:
+    x: 53
+    y: 65
+  green_27:
+    x: 55
+    y: 66
+  green_26:
+    x: 56
+    y: 67
+  green_25:
+    x: 58
+    y: 68
+  green_24:
+    x: 59
+    y: 68
+  green_23:
+    x: 61
+    y: 69
+  green_22:
+    x: 63
+    y: 69
+  green_21:
+    x: 65
+    y: 69
+  green_20:
+    x: 67
+    y: 70
+  green_19:
+    x: 68
+    y: 70
+  green_18:
+    x: 70
+    y: 70
+  green_17:
+    x: 72
+    y: 69
+  green_16:
+    x: 73
+    y: 69
+  green_15:
+    x: 74
+    y: 69
+  green_14:
+    x: 76
+    y: 68
+  green_13:
+    x: 78
+    y: 68
+  green_12:
+    x: 80
+    y: 67
+  green_11:
+    x: 82
+    y: 66
+  green_10:
+    x: 83
+    y: 65
+  green_9:
+    x: 84
+    y: 64
+  green_8:
+    x: 86
+    y: 63
+  green_7:
+    x: 88
+    y: 62
+  green_6:
+    x: 89
+    y: 61
+  green_5:
+    x: 91
+    y: 60
+  green_4:
+    x: 93
+    y: 59
+  green_3:
+    x: 94
+    y: 58
+  green_2:
+    x: 96
+    y: 57
+  green_1:
+    x: 98
+    y: 56

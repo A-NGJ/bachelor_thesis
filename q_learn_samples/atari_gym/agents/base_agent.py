@@ -35,6 +35,8 @@ class BaseAgent():
                               name=f'{self.env_name}_{self.algo}_q_next',
                               chkpt_dir=self.chkpt_dir)
 
+        self.loss_history = []
+
     def choose_action(self, observation):
         if np.random.random() > self.epsilon:
             state = T.tensor([observation], dtype=T.float).to(self.q_eval.device)
@@ -74,6 +76,9 @@ class BaseAgent():
     def load_models(self):
         self.q_eval.load_checkpoint()
         self.q_next.load_checkpoint()
+
+    def zero_loss_history(self):
+        self.loss_history = []
 
     def learn(self):
         raise NotImplementedError()

@@ -8,7 +8,7 @@ class DDQNAgent(BaseAgent):
     def learn(self):
         if self.memory.mem_cntr < self.batch_size:
             return
-        
+
         self.q_eval.optimizer.zero_grad()
 
         self.replace_target_network()

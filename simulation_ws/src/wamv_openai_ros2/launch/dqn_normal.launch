@@ -1,0 +1,6 @@
+<launch>
+    <!-- This version uses the openai_ros environments -->
+    <rosparam command="load" file="$(find wamv_openai_ros2)/config/dqn_params.yaml" />
+    <!-- Launch the training system -->
+    <node pkg="wamv_openai_ros2" name="wamv_dqn" type="main_dqn.py" output="screen"/>
+</launch>

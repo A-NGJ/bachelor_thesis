@@ -1,0 +1,13 @@
+batch_size: 32
+env_name: WamvNavTwoSetsBuoys-v0
+env_type: normal
+eps_dec: 5.0e-05
+eps_min: 0.01
+epsilon: 1.0
+gamma: 0.99
+load_checkpoint: false
+lr: 0.00025
+max_steps: 1000
+mem_size: 10000
+n_games: 700
+replace: 1000

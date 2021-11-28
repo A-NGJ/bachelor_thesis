@@ -22,4 +22,17 @@ https://arxiv.org/pdf/1506.02078.pdf
 https://arxiv.org/pdf/1503.04069.pdf
 https://arxiv.org/pdf/1312.5753.pdf
 http://sci2s.ugr.es/keel/pdf/algorithm/articulo/1990-Kohonen-PIEEE.pdf
+https://arxiv.org/pdf/1802.09477.pdf
+https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-0-q-learning-with-tables-and-neural-networks-d195264329d0
+https://web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf
+https://www.cs.uml.edu/ecg/uploads/AIfall14/MDPApplications3.pdf
 http://www.ai-junkie.com/ann/som/som1.html
+
+dlaczego sie zdecydowalem,
+zakres pracy we stępie
+ogolny przeglad,
+zbyt drobno, lepiej nie dzielic wstepu
+przyklady uzycia z literatura
+
+taksonomia w rozdziale z 1 --> 3
+
