@@ -7,3 +7,4 @@ class Dir(Enum):
     PARAMS = ROOT + 'parameters/'
     CHECKPOINT = ROOT + 'models/'
     RESULTS = ROOT + 'results/'
+    TRACK = ROOT + 'track/'

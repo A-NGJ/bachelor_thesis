@@ -1,5 +1,6 @@
 from collections import namedtuple
 import os
+import sys
 
 import cv2
 import numpy as np
@@ -15,6 +16,10 @@ from openai_ros.task_envs.wamv import utils
 from geometry_msgs.msg import Point
 from geometry_msgs.msg import Vector3
 from tf.transformations import euler_from_quaternion
+
+sys.path.append(os.path.expandvars('${SIMULATION_DIR}/bachelor_thesis/simulation_ws/src/'))
+from wamv_openai_ros2.scripts.enums import Dir
+from wamv_openai_ros2.scripts.util import make_dir
 
 
 class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
@@ -51,6 +56,8 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         self.is_beyond_track = False
 
         self.buoys = []
+        self.route = []
+        self.n_game = 0
 
         self._load_config()
 
@@ -96,18 +103,23 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
 
         rospy.logdebug(f'END {type(self).__name__} INIT...')
 
-
+    @make_dir(Dir.TRACK.value)
     def _load_buoys(self):
         n = int(rospy.get_param('/buoys/n'))
+        reds = np.zeros((n, 2), dtype=int)
+        greens = np.zeros((n, 2), dtype=int)
         for i in range(n):
             x_red = rospy.get_param(f'/buoys/red_{n-i}/x')
             x_green = rospy.get_param(f'/buoys/green_{n-i}/x')
             y_red = rospy.get_param(f'/buoys/red_{n-i}/y')
             y_green = rospy.get_param(f'/buoys/green_{n-i}/y')
+            reds[i] = np.array([x_red, y_red])
+            greens[i] = np.array([x_green, y_green])
             red = self.Point(x_red, y_red)
             green = self.Point(x_green, y_green)
             self.buoys.append((green, red))
-
+        np.save(f'{Dir.TRACK.value}reds.npy', reds)
+        np.save(f'{Dir.TRACK.value}greens.npy', greens)
 
     def _load_config(self):
         self.ros_ws_abspath = os.path.expandvars(rospy.get_param('/wamv/ros_ws_abspath', None))
@@ -265,6 +277,9 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
             self._load_buoys()
             self.is_beyond_track = False
             self.last_chkpt = (self.Point(np.inf, np.inf),)
+            self.n_game += 1
+            self.route = []
+        np.save(f'{Dir.TRACK.value}route_{self.n_game}.npy', np.array(self.route))
 
         return done
 
@@ -337,6 +352,7 @@ class WamvNavTwoSetsBuoysEnv(wamv_env.WamvEnv):
         base_position = odom.pose.pose.position
         x = round(base_position.x, self.dec_obs)
         y = round(base_position.y, self.dec_obs)
+        self.route.append([x, y])
         return x, y
 
 

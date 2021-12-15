@@ -80,6 +80,30 @@ def save_results(results, filename, *, extension='.npy'):
     np.save(dir_, results)
 
 
+@make_dir(Dir.TRACK.value)
+def plot_trace(algo):
+    reds = np.load(os.path.join(Dir.TRACK.value, 'reds.npy'))
+    greens = np.load(os.path.join(Dir.TRACK.value, 'greens.npy'))
+    dir_ = os.path.join(Dir.TRACK.value, algo)
+
+    fig = plt.figure()
+    fig.set_size_inches(10, 7)
+    ax = fig.add_subplot(111)
+    ax.scatter(reds[:, 0], reds[:, 1], color='r')
+    ax.scatter(greens[:, 0], greens[:, 1], color='g')
+    ax.vlines(x=33, color='#000000', label='Finish', ymin=53, ymax=71)
+    ax.vlines(x=100, color='#808080', label='Start', ymin=56, ymax=74)
+
+    for i in range(5):
+        trace = np.load(os.path.join(dir_, f'route_{i}.npy'))
+        ax.plot(trace[1:, 0], trace[1:, 1], color=f'C{i}', linewidth=2.0)
+
+    ax.axes.xaxis.set_visible(False)
+    ax.axes.yaxis.set_visible(False)
+    ax.legend()
+    plt.savefig(os.path.join(dir_, 'trace.png'))
+
+
 class RepeatActionAndMaxFrame(gym.Wrapper):
     def __init__(self, env=None, repeat=4, clip_reward=False, no_ops=0,
                  fire_first=False):
